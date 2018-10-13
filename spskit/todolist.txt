@@ -1,0 +1,12 @@
+
+ - Arquivos dos relatórios
+ - XC
+     - regras de validações
+ - XMLNormalizer
+ - SGML2XML
+     - SGMLXMLNormalizer
+     - renomear os ativos digitais e o xml
+     - renomear os ativos digitais dentro do xml
+     - gerar relatorio de origem das images
+
+ - servidor
