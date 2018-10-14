@@ -4,6 +4,7 @@ import os
 import shutil
 import zipfile
 
+from utils import files_utils
 from validations.article_data import ArticleData
 from validations.article_xml_validator.article_xml_validator import ArticleXMLValidator
 from validations.article_data_validator import ArticleDataValidator
@@ -106,6 +107,53 @@ class Outputs:
                 os.makedirs(_path)
 
 
+class ReportFiles(object):
+
+    def __init__(self, xml_name, reports_path, wrk_path=None):
+        self.xml_name = xml_name
+        self.wrk_path = wrk_path or reports_path
+        self.reports_path = reports_path
+        if not os.path.isdir(reports_path):
+            os.makedirs(reports_path)
+        self.ctrl_filename = '{}/{}{}.ctrl.txt'.format(self.wrk_path, self.xml_name)
+        self.style_report_filename = '{}{}.rep.html'.format(
+            self.reports_path, self.xml_name)
+        self.dtd_report_filename = '{}{}.dtd.txt'.format(
+            self.reports_path, self.xml_name)
+        self.pmc_dtd_report_filename = '{}{}.pmc.dtd.txt'.format(
+            self.reports_path, self.xml_name)
+        self.pmc_style_report_filename = '{}{}.pmc.rep.html'.format(
+            self.reports_path, self.xml_name)
+        self.err_filename = '{}{}.err.txt'.format(
+            self.reports_path, self.xml_name)
+        self.err_filename_html = '{}{}.err.html'.format(
+            self.reports_path, self.xml_name)
+        self.filename_html = '{}{}.html'.format(
+            self.reports_path, self.xml_name)
+        self.mkp2xml_report_filename = '{}{}.mkp2xml.txt'.format(
+            self.reports_path, self.xml_name)
+        self.mkp2xml_report_filename_html = '{}{}.mkp2xml.html'.format(
+            self.reports_path, self.xml_name)
+        self.data_report_filename = '{}{}.contents.html'.format(
+            self.reports_path, self.xml_name)
+        self.images_report_filename = '{}{}.images.html'.format(
+            self.reports_path, self.xml_name)
+        self.xml_structure_validations_filename = '{}{}{}'.format(
+            self.reports_path, '/xmlstr-', self.xml_name)
+        self.xml_content_validations_filename = '{}{}{}'.format(
+            self.reports_path, '/xmlcon-', self.xml_name)
+        self.journal_validations_filename = '{}{}{}'.format(
+            self.reports_path, '/journal-', self.xml_name)
+        self.issue_validations_filename = '{}{}{}'.format(
+            self.reports_path, '/issue-', self.xml_name)
+
+    def clean(self):
+        for f in [self.err_filename, self.dtd_report_filename,
+                  self.style_report_filename, self.pmc_dtd_report_filename,
+                  self.pmc_style_report_filename, self.ctrl_filename]:
+            files_utils.delete_file_or_folder(f)
+
+
 class XMLPackageQA:
 
     def __init__(self, configuration):
@@ -118,25 +166,25 @@ class XMLPackageQA:
     def validate_package(self, pkg_path, destination_path, delete):
         outputs = Outputs(destination_path)
         package = self.pkg_reception.receive_package(pkg_path, outputs.path, delete)
-        self._validate_package(package)
+        self._validate_package(package, outputs)
         return package
 
     def validate_files(self, files, destination_path, delete):
         outputs = Outputs(destination_path)
         package = self.pkg_reception.receive_files(files, outputs.path, delete)
-        self._validate_package(package)
+        self._validate_package(package, outputs)
         return package
 
-    def _validate_package(self, package):
+    def _validate_package(self, package, outputs):
         for prefix in sorted(package.keys()):
-            self._validate_article(package[prefix])
-        self.pkg_data_validator.validate(package)
+            self._validate_article(package[prefix], ReportFiles(prefix, outputs.reports_path))
+        self.pkg_data_validator.validate(package, outputs)
 
-    def _validate_article(self, pkg_item):
+    def _validate_article(self, pkg_item, report_files):
+        pkg_item['data'] = ArticleData(xml_file_path)
         xml_file_path = pkg_item['xml']
         asset_file_paths = pkg_item['assets']
-        pkg_item['data'] = ArticleData(xml_file_path)
-        pkg_item['result1'] = self.article_xml_validator.validate(
-            xml_file_path,
-            asset_file_paths)
-        pkg_item['result2'] = self.article_data_validator.validate(pkg_item)
+
+        self.article_xml_validator.validate(pkg_item['data'], xml_file_path, asset_file_paths, report_files)
+        pkg_item['reports'] = report_files
+        self.article_data_validator.validate(pkg_item, report_files)

@@ -14,10 +14,8 @@ class ArticleXMLValidator:
         self.style_validator = StyleValidator(self.configuration)
         self.html_validator = VisualValidator(self.configuration)
 
-    def validate(self, xml_filepath, xml_assets):
-        assets_report = self.assets_validator.validate(xml_filepath, xml_assets)
-        dtd_report = self.dtd_validator.validate(xml_filepath)
-        style_report = self.style_validator.validate(xml_filepath)
-        html_report = self.html_validator.validate(xml_filepath, xml_assets)
-
-        return assets_report, dtd_report, style_report, html_report
+    def validate(self, article_data, xml_filepath, xml_assets, report_files):
+        self.dtd_validator.validate(xml_filepath, report_files.dtd_report_filename)
+        self.assets_validator.validate(article_data, xml_filepath, xml_assets, report_files.err_filename)
+        self.style_validator.validate(xml_filepath, report_files.style_report_filename)
+        self.html_validator.validate(xml_filepath, xml_assets, report_files.filename_html)

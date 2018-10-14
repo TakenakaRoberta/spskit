@@ -1,24 +1,14 @@
 # coding: utf-8
-from report_manager import ReportManager, Pipe, Pipeline
+from utils.xml_utils import ValidatedXML
 
 
 class StructureValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.report_manager = ReportManager(configuration)
 
-    def validate(self, xml_filepath, xml_assets):
-        data = (xml_filepath, xml_assets)
-        data, report = self.report_manager.create(data, self._plumber_pipeline)
-        return report
-
-    @property
-    def _plumber_pipeline(self):
-        return Pipeline(self.SetupPipe(), self.SetupPipe())
-
-    class SetupPipe(Pipe):
-
-        def transform(self, data):
-            report = {}
-            return data, report
+    def validate(self, xml_filepath, report_file_path):
+        validated_xml = ValidatedXML(open(xml_filepath).read())
+        with open(report_file_path, 'w') as f:
+            f.write(''.join(validated_xml.errors) + '\n' + validated_xml.display(True))
+        return validated_xml

@@ -1,24 +1,16 @@
 # coding: utf-8
-from report_manager import ReportManager, Pipe, Pipeline
-
+import os
 
 class VisualValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.report_manager = ReportManager(configuration)
 
-    def validate(self, xml_filepath, xml_assets):
-        data = (xml_filepath, xml_assets)
-        data, report = self.report_manager.create(data, self._plumber_pipeline)
-        return report
-
-    @property
-    def _plumber_pipeline(self):
-        return Pipeline(self.SetupPipe(), self.SetupPipe())
-
-    class SetupPipe(Pipe):
-
-        def transform(self, data):
-            report = {}
-            return data, report
+    def validate(self, xml_filepath, xml_assets, report_file_path):
+        cmd = 'htmlgenerator {} {} -js {} -css {}'.format(
+                xml_filepath,
+                report_file_path,
+                self.configuration.get('SITE_JS_PATH', 'js_path'),
+                self.configuration.get('SITE_CSS_PATH', 'css_path'),
+            )
+        os.system(cmd)
