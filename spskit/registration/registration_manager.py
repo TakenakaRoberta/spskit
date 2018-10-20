@@ -1,5 +1,5 @@
 # coding: utf-8
-from validations.registration_validator import RegistrationValidator
+from registration.registration_validator import RegistrationValidator
 
 
 """

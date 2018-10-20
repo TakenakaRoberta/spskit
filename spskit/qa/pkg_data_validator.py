@@ -1,5 +1,5 @@
 # coding: utf-8
-from report_manager import ReportManager, Pipe, Pipeline
+from utils.report_manager import ReportManager, Pipe, Pipeline
 
 
 """
@@ -7,6 +7,7 @@ usa os dados de artigos e journal já registrados
 etc
 
 """
+
 
 class PkgDataValidator:
 

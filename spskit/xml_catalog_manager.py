@@ -7,8 +7,8 @@ usa RegistrationManager para validar os dados de artigos e journal considerando 
 """
 
 
-from xml_pkg_qa import XMLPackageQA
-from registration_manager import RegistrationManager
+from qa.xml_pkg_qa import XMLPackageQA
+from registration.registration_manager import RegistrationManager
 
 
 class XMLCatalogManager:

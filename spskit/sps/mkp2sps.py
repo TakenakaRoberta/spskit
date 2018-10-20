@@ -5,8 +5,8 @@ import shutil
 
 import plumber
 
-from xml_pkg_qa import XMLPackageQA, Outputs
-from xml_transformer import XMLTransformer
+from qa.xml_pkg_qa import XMLPackageQA, Outputs
+from utils.xml_transformer import XMLTransformer
 
 """
 markup_xml/scielo_markup
@@ -239,7 +239,7 @@ class SGMLXMLFilesPkg:
                     print(basename)
 
 
-class SGMLXML2XML:
+class SGMLXML2SPSXML:
 
     def __init__(self, configuration):
         self.configuration = configuration

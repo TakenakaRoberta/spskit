@@ -5,11 +5,11 @@ import shutil
 import zipfile
 
 from utils import files_utils
-from validations.article_data import ArticleData
-from validations.article_xml_validator.article_xml_validator import ArticleXMLValidator
-from validations.article_data_validator import ArticleDataValidator
-from validations.pkg_data_validator import PkgDataValidator
-from xml_normalizer import XMLNormalizer
+from sps.article_data import ArticleData
+from qa.article_xml_validator import ArticleXMLValidator
+from qa.article_data_validator import ArticleDataValidator
+from qa.pkg_data_validator import PkgDataValidator
+from sps.sps_normalizer import SPSXMLNormalizer
 
 
 def unzip_file(zip_file_path):
@@ -60,7 +60,7 @@ class PkgReception:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.xml_normalizer = XMLNormalizer(configuration)
+        self.spsxml_normalizer = SPSXMLNormalizer(configuration)
 
     def receive_package(self, pkg_file_path, destination_path, delete):
         outputs = Outputs(destination_path)
@@ -86,7 +86,7 @@ class PkgReception:
 
         package = Package(files)
         for prefix in sorted(package.keys()):
-            self.xml_normalizer.normalize(package[prefix]['xml'])
+            self.spsxml_normalizer.normalize(package[prefix]['xml'])
         return package
 
 
@@ -172,7 +172,8 @@ class XMLPackageQA:
     def validate_files(self, files, destination_path, delete):
         outputs = Outputs(destination_path)
         package = self.pkg_reception.receive_files(files, outputs.path, delete)
-        self._validate_package(package, outputs)
+        if len(files) > 1:
+            self._validate_package(package, outputs)
         return package
 
     def _validate_package(self, package, outputs):
@@ -181,9 +182,9 @@ class XMLPackageQA:
         self.pkg_data_validator.validate(package, outputs)
 
     def _validate_article(self, pkg_item, report_files):
-        pkg_item['data'] = ArticleData(xml_file_path)
         xml_file_path = pkg_item['xml']
         asset_file_paths = pkg_item['assets']
+        pkg_item['data'] = ArticleData(xml_file_path)
 
         self.article_xml_validator.validate(pkg_item['data'], xml_file_path, asset_file_paths, report_files)
         pkg_item['reports'] = report_files

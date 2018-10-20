@@ -2,7 +2,7 @@
 import plumber
 
 
-class XMLNormalizer:
+class SPSXMLNormalizer:
 
     def __init__(self, configuration):
         self.configuration = configuration

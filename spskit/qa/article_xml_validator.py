@@ -1,8 +1,8 @@
 # coding: utf-8
-from validations.article_xml_validator.assets_validator import AssetsValidator
-from validations.article_xml_validator.structure_validator import StructureValidator
-from validations.article_xml_validator.style_validator import StyleValidator
-from validations.article_xml_validator.visual_validator import VisualValidator
+from qa.assets_validator import AssetsValidator
+from qa.structure_validator import StructureValidator
+from qa.style_validator import StyleValidator
+from qa.visual_validator import VisualValidator
 
 
 class ArticleXMLValidator:
