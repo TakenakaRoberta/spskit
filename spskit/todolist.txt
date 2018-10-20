@@ -1,27 +1,27 @@
 
 QA
- - SPSXMLNormalizer
- - ArticleDataValidator
+ - SPSXMLNormalizer *
+ - ArticleDataValidator *
  - ArticleXMLValidator
     - AssetsValidator
     - StructureValidator
     - StyleValidator
     - VisualValidator
- - PkgDataValidator
+ - PkgDataValidator *
 
-MKP2XML
+MKP2XML *
  - SGMLXMLNormalizer
  - renomear os ativos digitais e o xml
  - renomear os ativos digitais dentro do xml
  - gerar relatorio de origem das images
 
-XPM
+XPM *
  - Interface gráfica
  - Relatórios
 
-XC
+XC *
  - Interface gráfica
  - Relatórios 
- - regras de validações
+ - regras de validações *
  - atualizar bases e "homolog.xml.scielo.br"
 

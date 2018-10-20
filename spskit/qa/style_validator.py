@@ -7,7 +7,7 @@ class StyleValidator:
     def __init__(self, configuration):
         self.configuration = configuration
 
-    def validate(self, xml_filepath, report_file_path):
+    def validate(self, article_data, xml_filepath, report_file_path):
         parsed_xml = packtools.XML(xml_filepath)
         xml_validator = packtools.XMLValidator.parse(parsed_xml)
         sps_is_valid, sps_errors = xml_validator.validate_style()

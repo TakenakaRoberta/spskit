@@ -8,15 +8,17 @@ etc
 
 """
 
+
 class ArticleDataValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.report_manager = ReportManager(configuration)
+        self.report_manager = ReportManager(configuration, self._plumber_pipeline)
 
-    def validate(self, data):
-        data, report = self.report_manager.create(data, self._plumber_pipeline)
-        return report
+    def validate(self, data, report_file_path):
+        data, report = self.report_manager.create(data)
+        with open(report_file_path, 'w') as f:
+            f.write(report)
 
     @property
     def _plumber_pipeline(self):
@@ -27,13 +29,11 @@ class ArticleDataValidator:
             self.languagePipe(),
             self.languagesPipe(),
             self.article_typePipe(),
-
             self.journal_titlePipe(),
             self.publisher_namePipe(),
             self.journal_id_publisher_idPipe(),
             self.journal_id_nlm_taPipe(),
             self.journal_issnsPipe(),
-
             self.months_seasonsPipe(),
             self.issue_labelPipe(),
             self.article_date_typesPipe(),
@@ -41,10 +41,8 @@ class ArticleDataValidator:
             self.doiPipe(),
             self.article_idPipe(),
             self.paginationPipe(),
-
             self.article_id_otherPipe(),
             self.orderPipe(),
-
             self.total_of_pagesPipe(),
             self.total_of_equationsPipe(),
             self.total_of_tablesPipe(),
@@ -61,16 +59,15 @@ class ArticleDataValidator:
             self.historyPipe(),
             self.titles_abstracts_keywordsPipe(),
             self.related_articlesPipe(),
-
             self.sectionsPipe(),
             self.paragraphsPipe(),
             self.disp_formulasPipe(),
             self.tablewrapPipe(),
             self.validate_xref_reftypePipe(),
             self.missing_xref_listPipe(),
-
             self.refstatsPipe(),
             self.refs_sourcesPipe(),
+            self.endPipe()
         )
 
     class SetupPipe(Pipe):
@@ -78,6 +75,11 @@ class ArticleDataValidator:
         def transform(self, data):
             report = {}
             return data, report
+
+    class EndPipe(Pipe):
+        def transform(self, data):
+            raw, transformed = data
+            return raw, transformed
 
     class spsPipe(Pipe):
         def transform(self, data):

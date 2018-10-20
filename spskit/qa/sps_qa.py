@@ -5,10 +5,10 @@ import shutil
 import zipfile
 
 from utils import files_utils
-from sps.article_data import ArticleData
 from qa.article_xml_validator import ArticleXMLValidator
 from qa.article_data_validator import ArticleDataValidator
 from qa.pkg_data_validator import PkgDataValidator
+from sps.article_data import ArticleData
 from sps.sps_normalizer import SPSXMLNormalizer
 
 
@@ -166,20 +166,23 @@ class SPSPackageQA:
     def validate_package(self, pkg_path, destination_path, delete):
         outputs = Outputs(destination_path)
         package = self.pkg_reception.receive_package(pkg_path, outputs.path, delete)
-        self._validate_package(package, outputs)
-        return package
+        pkg_data_validation_report_content = self._validate_package(package, outputs)
+        package['pkg_data_validations'] = pkg_data_validation_report_content
+        return package, outputs
 
     def validate_files(self, files, destination_path, delete):
         outputs = Outputs(destination_path)
         package = self.pkg_reception.receive_files(files, outputs.path, delete)
         if len(files) > 1:
-            self._validate_package(package, outputs)
-        return package
+            pkg_data_validation_report_content = self._validate_package(package, outputs)
+        package['pkg_data_validations'] = pkg_data_validation_report_content
+        return package, outputs
 
     def _validate_package(self, package, outputs):
         for prefix in sorted(package.keys()):
             self._validate_article(package[prefix], ReportFiles(prefix, outputs.reports_path))
-        self.pkg_data_validator.validate(package, outputs)
+        data, pkg_data_validation_report_content = self.pkg_data_validator.validate(package)
+        return pkg_data_validation_report_content
 
     def _validate_article(self, pkg_item, report_files):
         xml_file_path = pkg_item['xml']
@@ -188,4 +191,4 @@ class SPSPackageQA:
 
         self.article_xml_validator.validate(pkg_item['data'], xml_file_path, asset_file_paths, report_files)
         pkg_item['reports'] = report_files
-        self.article_data_validator.validate(pkg_item, report_files)
+        self.article_data_validator.validate(pkg_item, report_files.xml_content_validations_filename)

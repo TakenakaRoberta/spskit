@@ -17,8 +17,8 @@ etc
 
 class Registration:
 
-    def __init__(self, configuration):
-        self.registration_service = configuration
+    def __init__(self, registration_service):
+        self.registration_service = registration_service
 
     def get(self, data):
         return self.registration_service.get(data)
@@ -37,5 +37,5 @@ class RegistrationManager:
     def register(self, package):
         registered_data = self.registration.get(package)
         data, report = self.registration_validator.validate(package, registered_data)
-        self.registration.save(data)
+        self.registration.save(package)
         return report

@@ -11,7 +11,7 @@ from qa.sps_qa import SPSPackageQA
 from registration.registration_manager import RegistrationManager
 
 
-class XMLCatalogManager:
+class XMLConverter:
 
     def __init__(self, configuration):
         self.configuration = configuration
@@ -19,5 +19,5 @@ class XMLCatalogManager:
         self.registration_manager = RegistrationManager(configuration)
 
     def register_package(self, pkg_file_path, destination_path, delete):
-        package = self.qa.validate_package(pkg_file_path, destination_path, delete)
-        self.registration_manager.register(package)
+        package, ouputs = self.qa.validate_package(pkg_file_path, destination_path, delete)
+        report_data = self.registration_manager.register(package)

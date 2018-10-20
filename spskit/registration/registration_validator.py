@@ -13,11 +13,11 @@ class RegistrationValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.report_manager = ReportManager(configuration)
+        self.report_manager = ReportManager(configuration, self._plumber_pipeline)
 
     def validate(self, package, registered_data):
         data = package, registered_data
-        package, registered_data, report = self.report_manager.create(data, self._plumber_pipeline)
+        data, report = self.report_manager.create(data)
         return report
 
     @property
