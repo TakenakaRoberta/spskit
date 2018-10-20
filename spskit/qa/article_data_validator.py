@@ -129,7 +129,6 @@ class ArticleDataValidator:
             raw, transformed = data
             return raw, transformed
 
-
     class months_seasonsPipe(Pipe):
         def transform(self, data):
             raw, transformed = data
@@ -174,7 +173,7 @@ class ArticleDataValidator:
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
-            
+
     class total_of_pagesPipe(Pipe):
         def transform(self, data):
             raw, transformed = data
@@ -294,5 +293,3 @@ class ArticleDataValidator:
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
-
-

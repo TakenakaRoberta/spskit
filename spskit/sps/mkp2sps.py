@@ -5,7 +5,7 @@ import shutil
 
 import plumber
 
-from qa.xml_pkg_qa import XMLPackageQA, Outputs
+from qa.sps_qa import SPSPackageQA, Outputs
 from utils.xml_transformer import XMLTransformer
 
 """
@@ -245,7 +245,7 @@ class SGMLXML2SPSXML:
         self.configuration = configuration
         self.sgmlxml_normalizer = SGMLXMLNormalizer(configuration)
         self.xml_transformer = XMLTransformer(configuration)
-        self.xml_pkg_qa = XMLPackageQA(configuration)
+        self.sps_qa = SPSPackageQA(configuration)
 
     def pack(self, sgmlxml_file_path):
         sgmlxml_pkg = SGMLXMLFilesPkg(sgmlxml_file_path)
@@ -267,7 +267,7 @@ class SGMLXML2SPSXML:
     def _normalize_xml(self, sgmlxml_pkg):
         files = sgmlxml_pkg.xml_files
         destination_path = sgmlxml_pkg.outputs.path
-        self.xml_pkg_qa.validate_files(files, destination_path, delete=False)
+        self.sps_qa.validate_files(files, destination_path, delete=False)
 
 
 class SGMLXMLNormalizer:

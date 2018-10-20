@@ -154,7 +154,7 @@ class ReportFiles(object):
             files_utils.delete_file_or_folder(f)
 
 
-class XMLPackageQA:
+class SPSPackageQA:
 
     def __init__(self, configuration):
         self.configuration = configuration

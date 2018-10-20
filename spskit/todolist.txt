@@ -1,12 +1,27 @@
 
- - Arquivos dos relatórios
- - XC
-     - regras de validações
- - XMLNormalizer
- - SGML2XML
-     - SGMLXMLNormalizer
-     - renomear os ativos digitais e o xml
-     - renomear os ativos digitais dentro do xml
-     - gerar relatorio de origem das images
+QA
+ - SPSXMLNormalizer
+ - ArticleDataValidator
+ - ArticleXMLValidator
+    - AssetsValidator
+    - StructureValidator
+    - StyleValidator
+    - VisualValidator
+ - PkgDataValidator
 
- - servidor
+MKP2XML
+ - SGMLXMLNormalizer
+ - renomear os ativos digitais e o xml
+ - renomear os ativos digitais dentro do xml
+ - gerar relatorio de origem das images
+
+XPM
+ - Interface gráfica
+ - Relatórios
+
+XC
+ - Interface gráfica
+ - Relatórios 
+ - regras de validações
+ - atualizar bases e "homolog.xml.scielo.br"
+
