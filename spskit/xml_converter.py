@@ -18,6 +18,6 @@ class XMLConverter:
         self.qa = SPSPackageQA(configuration)
         self.registration_manager = RegistrationManager(configuration)
 
-    def register_package(self, pkg_file_path, destination_path, delete):
-        package, ouputs = self.qa.validate_package(pkg_file_path, destination_path, delete)
+    def register_package(self, pkg_file_path, outputs_path, delete):
+        package, ouputs = self.qa.validate_package(pkg_file_path, outputs_path, delete)
         report_data = self.registration_manager.register(package)

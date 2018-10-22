@@ -10,5 +10,5 @@ class XMLPackageManager:
         self.configuration = configuration
         self.qa = SPSPackageQA(configuration)
 
-    def validate_package(self, pkg_file_path, destination_path, delete):
-        package, outputs = self.qa.validate_package(pkg_file_path, destination_path, delete)
+    def validate_package(self, pkg_file_path, outputs_path, delete):
+        package, outputs = self.qa.validate_package(pkg_file_path, outputs_path, delete)

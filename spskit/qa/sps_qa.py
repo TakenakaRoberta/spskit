@@ -163,15 +163,15 @@ class SPSPackageQA:
         self.pkg_data_validator = PkgDataValidator(configuration)
         self.pkg_reception = PkgReception(configuration)
 
-    def validate_package(self, pkg_path, destination_path, delete):
-        outputs = Outputs(destination_path)
+    def validate_package(self, pkg_path, outputs_path, delete):
+        outputs = Outputs(outputs_path)
         package = self.pkg_reception.receive_package(pkg_path, outputs.path, delete)
         pkg_data_validation_report_content = self._validate_package(package, outputs)
         package['pkg_data_validations'] = pkg_data_validation_report_content
         return package, outputs
 
-    def validate_files(self, files, destination_path, delete):
-        outputs = Outputs(destination_path)
+    def validate_files(self, files, outputs_path, delete):
+        outputs = Outputs(outputs_path)
         package = self.pkg_reception.receive_files(files, outputs.path, delete)
         if len(files) > 1:
             pkg_data_validation_report_content = self._validate_package(package, outputs)
