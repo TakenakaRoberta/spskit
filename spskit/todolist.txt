@@ -25,3 +25,7 @@ XC *
  - regras de validações *
  - atualizar bases e "homolog.xml.scielo.br"
 
+-------
+
+Pela versao de sps e dtd, instanciar validadores correspondentes
+Deixar mais genéricos as classes (Trocar Article por Document, SPS por outro Schema, por exemplo)

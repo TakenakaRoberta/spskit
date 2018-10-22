@@ -247,11 +247,11 @@ class SGMLXML2SPSXML:
         self.xml_transformer = XMLTransformer(configuration)
         self.sps_qa = SPSPackageQA(configuration)
 
-    def pack(self, sgmlxml_file_path):
+    def pack(self, sgmlxml_file_path, acron):
         sgmlxml_pkg = SGMLXMLFilesPkg(sgmlxml_file_path)
         self._normalize_sgmlxml(sgmlxml_pkg)
         self._sgmlxml2xml(sgmlxml_pkg)
-        self._normalize_xmlsgmlxml_pkg()
+        return sgmlxml_pkg.xml_filename
 
     def _normalize_sgmlxml(self, sgmlxml_pkg):
         data, reports = self.sgmlxml_normalizer.normalize(sgmlxml_pkg)
@@ -263,11 +263,6 @@ class SGMLXML2SPSXML:
         # renomear os ativos digitais dentro do xml
         # gerar relatorio de origem das images
         self.xml_transformer.transform(sgmlxml_pkg.new_sgmlxml, sgmlxml_pkg.xml_filename)
-
-    def _normalize_xml(self, sgmlxml_pkg):
-        files = sgmlxml_pkg.xml_files
-        destination_path = sgmlxml_pkg.outputs.path
-        self.sps_qa.validate_files(files, destination_path, delete=False)
 
 
 class SGMLXMLNormalizer:
