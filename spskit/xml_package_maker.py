@@ -45,8 +45,8 @@ def execute_xpm(xml, configuration, outputs_path):
         return False, errors
 
     if sgmlxml_file_path is not None:
-        sgm2xml = SGMLXML2SPSXML(configuration)
-        pkg_file_path, outputs_path = sgm2xml.pack(
+        sgmxml2xml = SGMLXML2SPSXML(configuration)
+        pkg_file_path, outputs_path = sgmxml2xml.make(
             sgmlxml_file_path, inputs.acron)
 
     xpm = XMLPackageManager(configuration)

@@ -1,15 +1,18 @@
-import re
 from datetime import datetime
 import os
 import shutil
 import zipfile
 
 import logging
-import contextlib
 
-import requests
-from lxml import etree
-from StringIO import StringIO
+
+class FileInfo:
+
+    def __init__(self, file_path):
+        self.file_path = file_path
+        self.basename = os.path.basename(file_path)
+        self.dirname = os.path.dirname(file_path)
+        self.name, self.ext = os.path.splitext(self.basename)
 
 
 def delete_file_or_folder(path):
