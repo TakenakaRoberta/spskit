@@ -15,6 +15,16 @@ class FileInfo:
         self.name, self.ext = os.path.splitext(self.basename)
 
 
+def unzip_file(zip_file_path):
+    files = []
+    with open(zip_file_path, 'rb') as f:
+        z = zipfile.ZipFile(f)
+        for name in z.namelist():
+            z.extract(name, "./")
+            files.append(name)
+    return files
+
+
 def delete_file_or_folder(path):
     if os.path.isdir(path):
         for item in os.listdir(path):

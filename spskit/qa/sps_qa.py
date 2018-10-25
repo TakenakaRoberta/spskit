@@ -2,24 +2,13 @@
 
 import os
 import shutil
-import zipfile
 
-from utils import files_utils
+from utils.files_utils import unzip_file, delete_file_or_folder
 from qa.article_xml_validator import ArticleXMLValidator
 from qa.article_data_validator import ArticleDataValidator
 from qa.pkg_data_validator import PkgDataValidator
 from sps.article_data import ArticleData
 from sps.sps_normalizer import SPSXMLNormalizer
-
-
-def unzip_file(zip_file_path):
-    files = []
-    with open(zip_file_path, 'rb') as f:
-        z = zipfile.ZipFile(f)
-        for name in z.namelist():
-            z.extract(name, "./")
-            files.append(name)
-    return files
 
 
 class Package:
@@ -67,7 +56,8 @@ class PkgReception:
         if os.path.isfile(pkg_file_path) and pkg_file_path.endswith('.zip'):
             package = self.receive_zip(pkg_file_path, outputs.path, delete)
         elif os.path.isdir(pkg_file_path):
-            files = [os.path.join(pkg_file_path, f) for f in os.listdir(pkg_file_path)]
+            files = [os.path.join(pkg_file_path, f)
+                     for f in os.listdir(pkg_file_path)]
             package = self.receive_files(files, outputs.path, delete)
         elif isinstance(pkg_file_path, list):
             files = pkg_file_path
@@ -95,6 +85,8 @@ class Outputs:
     def __init__(self, path):
         self.path = path
         self.scielo_package_path = os.path.join(path, 'scielo_package')
+        self.work_path = os.path.join(path, 'work')
+        self.src_path = os.path.join(path, 'src')
         self.scielo_package_zips_path = os.path.join(path, 'scielo_package_zips')
         self.pmc_package_path = os.path.join(path, 'pmc_package')
         self.reports_path = os.path.join(path, 'errors')
@@ -151,7 +143,7 @@ class ReportFiles(object):
         for f in [self.err_filename, self.dtd_report_filename,
                   self.style_report_filename, self.pmc_dtd_report_filename,
                   self.pmc_style_report_filename, self.ctrl_filename]:
-            files_utils.delete_file_or_folder(f)
+            delete_file_or_folder(f)
 
 
 class SPSPackageQA:
