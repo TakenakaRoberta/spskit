@@ -13,6 +13,7 @@ class FileInfo:
         self.basename = os.path.basename(file_path)
         self.dirname = os.path.dirname(file_path)
         self.name, self.ext = os.path.splitext(self.basename)
+        self.name_prefix = self.name
 
 
 def unzip_file(zip_file_path):
