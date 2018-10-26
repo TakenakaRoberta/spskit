@@ -13,6 +13,8 @@ class FileInfo:
         self.basename = os.path.basename(file_path)
         self.dirname = os.path.dirname(file_path)
         self.name, self.ext = os.path.splitext(self.basename)
+        if self.basename.endswith('.sgm.xml'):
+            self.name, ign = os.path.splitext(self.name)
         self.name_prefix = self.name
 
 

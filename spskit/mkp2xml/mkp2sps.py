@@ -5,32 +5,127 @@ from bs4 import BeautifulSoup
 from utils.xml_transformer import XMLTransformer
 from utils.fs_utils import FileInfo
 from qa.sps_qa import Outputs
+from sps.article_data import ArticleData
+
+
+from mimetypes import MimeTypes
+MIME_TYPES = MimeTypes()
+
+
+def get_mkp_href_data(elem_name, elem_id, alternative_id):
+    suffixes = []
+    possibilities = []
+    n = ''
+    if elem_name == 'equation':
+        suffixes.append('frm')
+        suffixes.append('form')
+        suffixes.append('eq')
+        n = get_number_from_element_id(elem_id)
+    elif elem_name in ['tabwrap', 'equation', 'figgrp']:
+        suffixes.append(elem_name[0])
+        suffixes.append(elem_name[0:3])
+        n = get_number_from_element_id(elem_id)
+    else:
+        suffixes.append('img')
+        suffixes.append('image')
+        alternative_id += 1
+        n = str(alternative_id)
+
+    for suffix in suffixes:
+        possibilities.append(suffix + n)
+        if n != '':
+            possibilities.append(suffix + '0' + n)
+    return (n, possibilities, alternative_id)
+
+
+def get_number_from_element_id(element_id):
+    n = ''
+    i = 0
+    is_letter = True
+    while i < len(element_id) and is_letter:
+        is_letter = not element_id[i].isdigit()
+        i += 1
+    if not is_letter:
+        n = element_id[i-1:]
+        if n != '':
+            n = str(int(n))
+    return n
 
 
 class SGMLXML2SPSXML:
 
-    def __init__(self, configuration):
+    def __init__(self, configuration, sgmlxml_file_path, acron):
         self.configuration = configuration
+        self.files = RelatedArticleFiles(sgmlxml_file_path)
+        self.acron = acron
 
-    def make(self, sgmlxml_file_path, acron):
-        work_xml_file_path = sgmlxml_file_path.replace('.sgm.xml', '.xml')
-        files = RelatedArticleFiles(work_xml_file_path)
+    def make(self):
+        # normaliza sgmlxml
+        self.sgmlxml = SGMLXML(self.files.sgmlxml_file_info.file_path)
+        self.sgmlxml.fix_content(self.files.sgml_html, self.files)
+        with open(self.files.src_sgmlxml_file_info.file_path, 'wb') as f:
+            f.write(self.sgmlxml.content)
 
-        sgmlxml = SGMLXML(sgmlxml_file_path)
-        sgmlxml.fix_content(SGMLHTML(files.html_file_info.file_path), files)
-        with open(sgmlxml_file_path, 'wb') as f:
-            f.write(sgmlxml.content)
+        # sgmlxml 2 xml
+        self._sgmlxml2xml(self.files.src_sgmlxml_file_info.file_path,
+                          self.sgmlxml.sps_version,
+                          self.files.work_xml_file_info.file_path)
 
-        self._sgmlxml2xml(
-            sgmlxml_file_path, sgmlxml.sps_version, work_xml_file_path)
-        # tiff2jpg (src_path)
+        # normaliza xml
+        self.spsxml = DraftSPSXML(self.files.work_xml_file_info.file_path)
+        self.spsxml.update_href_values()
+        self.spsxml.replace_mimetypes()
+        with open(self.files.src_xml_file_info.file_path, 'wb') as f:
+            f.write(self.spsxml.content)
+
+        doc = ArticleData(self.files.src_xml_file_info.file_path)
+        new_name = PackageName(doc).get()
+        self.spsxml.rename_href(new_name)
 
     def _sgmlxml2xml(self, sgmlxml_file_path, sps_version, work_xml_file_path):
+        # sgmlxml 2 xml
         xsl_id = 'XSL_{}'.format(sps_version)
         xsl_file_path = self.configuration[xsl_id]
         self.configuration.update({'XSL': xsl_file_path})
         xml_transformer = XMLTransformer(self.configuration)
         xml_transformer.transform(sgmlxml_file_path, work_xml_file_path)
+
+
+class DraftSPSXML:
+
+    def __init__(self, file_path):
+        self.content = open(file_path, 'rb').read()
+
+    @property
+    def bs(self):
+        return self._bs
+
+    @property
+    def content(self):
+        return self.bs.prettify()
+
+    @content.setter
+    def content(self, value):
+        self._bs = BeautifulSoup(value, 'lxml')
+
+    def replace_mimetypes(self):
+        for elem in self.bs.find_all(attrs={'mimetype': not None}):
+            f = elem['mimetype']
+            if 'replace' in f:
+                f = f.replace('replace', '')
+                result = MIME_TYPES.guess_type(f)
+                elem['mimetype'] = result[0] or ''
+                if '/' in result:
+                    m, ms = result.split('/')
+                    elem['mimetype'] = m
+                    elem['mime-subtype'] = ms
+
+    def rename_href(self, new_name):
+        replacements = []
+        for elem in self.bs.find_all(attrs={'xlink:href': not None}):
+            if not ':' in elem['xlink:href']:
+                previous = elem['xlink:href']
+                elem['xlink:href'] = '...'
 
 
 class SGMLXML:
@@ -105,7 +200,7 @@ class SGMLXML:
             else:
                 elem_name = elem.parent.name
                 elem_id = elem.parent.get('id')
-                found, possible_href_names, alternative_id = files.get_file(
+                found, alternative_id = files.get_file(
                     elem_name, elem_id, alternative_id)
                 file_info = None
                 if len(found) == 0:
@@ -116,7 +211,7 @@ class SGMLXML:
                     file_info = found[0]
                 if file_info is None:
                     self.not_found.append(
-                        (elem_name, elem_id, possible_href_names))
+                        (elem_name, elem_id, files.digital_asset_file_paths))
                 else:
                     new_href = os.path.join(file_info.path, file_info.name)
                     self.replaced.append((elem_name, elem_id, new_href))
@@ -242,28 +337,41 @@ class SGMLHTML(object):
 
 class RelatedArticleFiles(object):
 
-    def __init__(self, work_xml_file_path):
+    def __init__(self, sgmlxml_file_path):
+        self.sgmlxml_file_info = FileInfo(sgmlxml_file_path)
+
+        work_xml_file_path = sgmlxml_file_path.replace('.sgm.xml', '.xml')
         self.work_xml_file_info = FileInfo(work_xml_file_path)
+
         self.name_prefix = self.work_xml_file_info.name_prefix
         if 'v' == self.name_prefix[3] and \
            self.name_prefix.startswith('a') and \
            self.name_prefix[1:3].isdigit():
             self.name_prefix = self.name_prefix[:3]
+
         self.outputs = Outputs(os.path.dirname(
             os.path.dirname(self.xml_file_info.path)))
+
         self.html_file_info = FileInfo(
             os.path.join(self.xml_file_info.path),
             self.xml_file_info.name+'.temp.htm')
+
         self.src_xml_file_info = FileInfo(
             os.path.join(
                 self.outputs.src_path, self.work_xml_file_info.basename)
+        )
+        self.src_sgmlxml_file_info = FileInfo(
+            os.path.join(
+                self.outputs.src_path, self.sgmlxml_file_info.basename)
         )
         self.digital_asset_file_paths = [
             os.path.join(self.src_xml_file_info.path, f)
             for f in os.listdir(self.src_xml_file_info.path)
             if f.startswith(self.name_prefix)]
-        html_sgml = SGMLHTML(self.html_file_info.file_path)
-        self.digital_asset_file_paths.extend(html_sgml.image_file_paths)
+
+        self.sgml_html = SGMLHTML(self.html_file_info.file_path)
+
+        self.digital_asset_file_paths.extend(self.sgml_html.image_file_paths)
         self.digital_asset_file_info_items = {}
         for f in self.digital_asset_file_paths:
             f_info = FileInfo(f)
@@ -271,6 +379,10 @@ class RelatedArticleFiles(object):
             if suffix not in self.digital_asset_file_info_items.keys():
                 self.digital_asset_file_info_items[suffix] = []
             self.digital_asset_file_info_items[suffix].append(f_info)
+
+    def tiff2jpg(self):
+        # MISSING tiff2jpg (src_path)
+        pass
 
     def get_file(self, elem_name, elem_id, alternative_id):
         found = []
@@ -283,44 +395,70 @@ class RelatedArticleFiles(object):
         f = self.digital_asset_file_info_items.get(elem_id)
         if f is not None:
             found.extend(f)
-        return (found, self.src_pkgfiles.related_files, alternative_id)
+        return (found, alternative_id)
 
 
-def get_mkp_href_data(elem_name, elem_id, alternative_id):
-    suffixes = []
-    possibilities = []
-    n = ''
-    if elem_name == 'equation':
-        suffixes.append('frm')
-        suffixes.append('form')
-        suffixes.append('eq')
-        n = get_number_from_element_id(elem_id)
-    elif elem_name in ['tabwrap', 'equation', 'figgrp']:
-        suffixes.append(elem_name[0])
-        suffixes.append(elem_name[0:3])
-        n = get_number_from_element_id(elem_id)
-    else:
-        suffixes.append('img')
-        suffixes.append('image')
-        alternative_id += 1
-        n = str(alternative_id)
+class PackageName(object):
 
-    for suffix in suffixes:
-        possibilities.append(suffix + n)
-        if n != '':
-            possibilities.append(suffix + '0' + n)
-    return (n, possibilities, alternative_id)
+    def __init__(self, acron, doc):
+        self.acron = acron
+        self.doc = doc
+        self.xml_name = doc.xml_name
 
+    def get(self):
+        parts = [self.issn, self.acron,
+                 self.doc.volume, self.issueno, self.suppl,
+                 self.last, self.doc.compl]
+        return '-'.join(
+            [part for part in parts if part is not None and not part == ''])
 
-def get_number_from_element_id(element_id):
-    n = ''
-    i = 0
-    is_letter = True
-    while i < len(element_id) and is_letter:
-        is_letter = not element_id[i].isdigit()
-        i += 1
-    if not is_letter:
-        n = element_id[i-1:]
-        if n != '':
-            n = str(int(n))
-    return n
+    @property
+    def issueno(self):
+        _issueno = self.doc.number
+        if _issueno:
+            if _issueno == 'ahead':
+                _issueno = '0'
+            if _issueno.isdigit():
+                if int(_issueno) == 0:
+                    _issueno = None
+                else:
+                    n = len(_issueno)
+                    if len(_issueno) < 2:
+                        n = 2
+                    _issueno = _issueno.zfill(n)
+        return _issueno
+
+    @property
+    def suppl(self):
+        s = self.doc.volume_suppl \
+            if self.doc.volume_suppl else self.doc.number_suppl
+        if s is not None:
+            s = 's' + s if s != '0' else 'suppl'
+        return s
+
+    @property
+    def issn(self):
+        _issns = [_issn
+                  for _issn in [self.doc.e_issn, self.doc.print_issn]
+                  if _issn is not None]
+        if len(_issns) > 0:
+            if self.xml_name and self.xml_name[0:9] in _issns:
+                _issn = self.xml_name[0:9]
+            else:
+                _issn = _issns[0]
+        return _issn
+
+    @property
+    def last(self):
+        if self.doc.fpage is not None and self.doc.fpage != '0':
+            _last = self.doc.fpage
+            if self.doc.fpage_seq is not None:
+                _last += self.doc.fpage_seq
+        elif self.doc.elocation_id is not None:
+            _last = self.doc.elocation_id
+        elif self.doc.number == 'ahead' and \
+                self.doc.doi and '/' in self.doc.doi:
+            _last = self.doc.doi[self.doc.doi.find('/')+1:].replace('.', '-')
+        else:
+            _last = self.doc.publisher_article_id
+        return _last
