@@ -3,8 +3,8 @@
 import os
 import sys
 import argparse
-from mkp2xml.mkp2sps import SGMLXML2SPSXML
-from qa.sps_qa import SPSPackageQA
+from .mkp2xml.mkp2sps import SGMLXML2SPSXML
+from .qa.sps_qa import SPSPackageQA
 
 
 def display_text(text):

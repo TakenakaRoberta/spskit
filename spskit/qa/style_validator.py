@@ -7,13 +7,22 @@ class StyleValidator:
     def __init__(self, configuration):
         self.configuration = configuration
 
-    def validate(self, article_data, xml_filepath, report_file_path):
-        parsed_xml = packtools.XML(xml_filepath)
-        xml_validator = packtools.XMLValidator.parse(parsed_xml)
-        sps_is_valid, sps_errors = xml_validator.validate_style()
+    def validate(self, sps_version, xml_filepath, report_file_path):
+        sps_errors = []
+        sps_is_valid = False
+        try:
+            parsed_xml = packtools.XML(xml_filepath)
+            xml_validator = packtools.XMLValidator.parse(parsed_xml)
+            sps_is_valid, _sps_errors = xml_validator.validate_style()
+            sps_errors.extend([e.message for e in _sps_errors])
 
-        with open(report_file_path, 'w') as f:
-            f.write('\n'.join(sps_errors))
+        except packtools.exceptions.XMLSPSVersionError as e:
+            sps_errors.append(str(e))
+        except packtools.exceptions.XMLDoctypeError as e:
+            sps_errors.append(str(e))
+
+        with open(report_file_path, 'wb') as f:
+            f.write('\n'.join(sps_errors).encode('utf-8'))
 
         return sps_is_valid
 

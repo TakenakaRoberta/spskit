@@ -1,8 +1,8 @@
 # coding: utf-8
-from qa.assets_validator import AssetsValidator
-from qa.structure_validator import StructureValidator
-from qa.style_validator import StyleValidator
-from qa.visual_validator import VisualValidator
+from spskit.qa.assets_validator import AssetsValidator
+from spskit.qa.structure_validator import StructureValidator
+from spskit.qa.style_validator import StyleValidator
+from spskit.qa.visual_validator import VisualValidator
 
 
 class ArticleXMLValidator:

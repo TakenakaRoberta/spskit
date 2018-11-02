@@ -3,20 +3,34 @@
 import logging
 
 from lxml import etree
-from StringIO import StringIO
+from io import StringIO, BytesIO
 
 
 class XML(object):
 
     def __init__(self, textxml):
-        self.parse_errors = []
+        textxml = textxml.strip()
+        self.processing_instruction = ''
+        if textxml.startswith('<?xml'):
+            self.processing_instruction = textxml[:textxml.find('?>')+2]
+            textxml = textxml[len(self.processing_instruction):].strip()
+        print(self.processing_instruction)
+        print(textxml)
         self.text = textxml
-        self._parse_xml()
 
-    def _parse_xml(self):
-        xml = StringIO(self.text)
+    @property
+    def text(self):
+        return self.processing_instruction+etree.tostring(self.tree, encoding='unicode')
+
+    @text.setter
+    def text(self, value):
+        self._parse_xml(value)
+
+    def _parse_xml(self, text):
+        self.parse_errors = []
         self.tree = None
         try:
+            xml = StringIO(text)
             self.tree = etree.parse(xml)
         except etree.XMLSyntaxError as e:
             self.parse_errors.append(e.message)
@@ -24,14 +38,15 @@ class XML(object):
             msg = 'XML._parse_xml(): Unknown error. '
             logging.exception(msg, e)
             self.parse_errors.append(msg)
+        if len(self.parse_errors) > 0:
+            print(self.parse_errors)
 
     @property
     def pretty_text(self):
         if self.tree is None:
             return self.text.replace('<', '\n<').replace('\n</', '</').strip()
-        return etree.tostring(
+        return self.processing_instruction+etree.tostring(
                 self.tree,
-                encoding='unicode',
                 pretty_print=True)
 
 

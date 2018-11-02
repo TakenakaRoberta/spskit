@@ -1,5 +1,5 @@
-from utils import xml_utils
-from utils.files_utils import FileInfo
+from spskit.utils import xml_utils
+from spskit.utils.files_utils import FileInfo
 
 
 def parse_issue(issue):

@@ -1,5 +1,5 @@
 # coding: utf-8
-from utils.xml_utils import ValidatedXML
+from spskit.utils.xml_utils import ValidatedXML
 
 
 class StructureValidator:

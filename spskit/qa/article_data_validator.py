@@ -1,5 +1,5 @@
 # coding: utf-8
-from utils.report_manager import ReportManager, Pipe, Pipeline
+from spskit.utils.report_manager import ReportManager, Pipe, Pipeline
 
 
 """

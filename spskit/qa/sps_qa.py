@@ -3,12 +3,12 @@
 import os
 import shutil
 
-from utils.files_utils import unzip_file, delete_file_or_folder
-from qa.article_xml_validator import ArticleXMLValidator
-from qa.article_data_validator import ArticleDataValidator
-from qa.pkg_data_validator import PkgDataValidator
-from sps.article_data import ArticleData
-from sps.sps_normalizer import SPSXMLNormalizer
+from spskit.utils.files_utils import unzip_file, delete_file_or_folder
+from spskit.qa.article_xml_validator import ArticleXMLValidator
+from spskit.qa.article_data_validator import ArticleDataValidator
+from spskit.qa.pkg_data_validator import PkgDataValidator
+from spskit.qa.sps_xml_normalizer import SPSXMLNormalizer
+from spskit.sps.article_data import ArticleData
 
 
 class Package:

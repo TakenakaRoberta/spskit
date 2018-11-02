@@ -17,6 +17,12 @@ class FileInfo:
             self.name, ign = os.path.splitext(self.name)
         self.name_prefix = self.name
 
+    def read(self):
+        return read_file(self.file_path)
+
+    def write(self, content):
+        write_file(self.file_path, content)
+
 
 def unzip_file(zip_file_path):
     files = []
@@ -75,7 +81,7 @@ def packing_zip(files):
     return target
 
 
-def write_file(filename, content, mode='w'):
+def write_file(filename, content, mode='wb'):
     content = content.encode('utf-8')
     with open(filename, mode) as f:
         try:
@@ -102,5 +108,7 @@ def write_log(msg):
     error_report.close()
 
 
-def read_file(file_path):
-    return open(file_path).read()
+def read_file(file_path, mode='rb'):
+    with open(file_path, mode) as f:
+        content = f.read().decode('utf-8')
+    return content

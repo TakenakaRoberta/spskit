@@ -3,10 +3,10 @@ import shutil
 
 from bs4 import BeautifulSoup
 
-from utils.xml_transformer import XMLTransformer
-from utils.fs_utils import FileInfo
-from qa.sps_qa import Outputs
-from sps.article_data import ArticleData
+from spskit.utils.xml_transformer import XMLTransformer
+from spskit.utils.files_utils import FileInfo
+from spskit.qa.sps_qa import Outputs
+from spskit.sps.article_data import ArticleData
 
 
 from mimetypes import MimeTypes

@@ -1,15 +1,8 @@
-import re
 from datetime import datetime
 import os
-import shutil
-import zipfile
 
 import logging
 import contextlib
-
-import requests
-from lxml import etree
-from StringIO import StringIO
 
 
 class FTPService(object):

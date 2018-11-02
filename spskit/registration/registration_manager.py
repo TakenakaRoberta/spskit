@@ -1,5 +1,5 @@
 # coding: utf-8
-from registration.registration_validator import RegistrationValidator
+from spskit.registration.registration_validator import RegistrationValidator
 
 
 """
