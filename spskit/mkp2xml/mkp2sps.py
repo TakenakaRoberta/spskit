@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from bs4 import BeautifulSoup
 
@@ -72,15 +73,21 @@ class SGMLXML2SPSXML:
                           self.files.work_xml_file_info.file_path)
 
         # normaliza xml
-        self.spsxml = DraftSPSXML(self.files.work_xml_file_info.file_path)
-        self.spsxml.update_href_values()
-        self.spsxml.replace_mimetypes()
-        with open(self.files.src_xml_file_info.file_path, 'wb') as f:
-            f.write(self.spsxml.content)
-
-        doc = ArticleData(self.files.src_xml_file_info.file_path)
+        doc = ArticleData(self.files.work_xml_file_info.file_path)
         new_name = PackageName(doc).get()
-        self.spsxml.rename_href(new_name)
+
+        # pacote
+        self.spsxml = DraftSPSXML(self.files.work_xml_file_info.file_path)
+        replacements = self.spsxml.replace_href_values(new_name+'-')
+        self.spsxml.replace_mimetypes()
+        with open(self.files.xml_file_info.file_path, 'wb') as f:
+            f.write(self.spsxml.content)
+        self.files.pack(new_name)
+        for k, v in dict(replacements):
+            shutil.copyfile(k, os.path.join(self.files.xml_file_info.path, v))
+
+        # relatorio de imagem
+        # FIXME
 
     def _sgmlxml2xml(self, sgmlxml_file_path, sps_version, work_xml_file_path):
         # sgmlxml 2 xml
@@ -94,6 +101,7 @@ class SGMLXML2SPSXML:
 class DraftSPSXML:
 
     def __init__(self, file_path):
+        self.file_info = FileInfo(file_path)
         self.content = open(file_path, 'rb').read()
 
     @property
@@ -120,12 +128,16 @@ class DraftSPSXML:
                     elem['mimetype'] = m
                     elem['mime-subtype'] = ms
 
-    def rename_href(self, new_name):
+    def replace_href_values(self, new_name):
         replacements = []
         for elem in self.bs.find_all(attrs={'xlink:href': not None}):
             if not ':' in elem['xlink:href']:
                 previous = elem['xlink:href']
-                elem['xlink:href'] = '...'
+                f = FileInfo(previous)
+                new = f.basename.replace(self.file_info.name_prefix, new_name)
+                elem['xlink:href'] = new
+                replacements.append((previous, new))
+        return replacements
 
 
 class SGMLXML:
@@ -350,11 +362,11 @@ class RelatedArticleFiles(object):
             self.name_prefix = self.name_prefix[:3]
 
         self.outputs = Outputs(os.path.dirname(
-            os.path.dirname(self.xml_file_info.path)))
+            os.path.dirname(self.sgmlxml_file_info.path)))
 
         self.html_file_info = FileInfo(
-            os.path.join(self.xml_file_info.path),
-            self.xml_file_info.name+'.temp.htm')
+            os.path.join(self.sgmlxml_file_info.path),
+            self.sgmlxml_file_info.name+'.temp.htm')
 
         self.src_xml_file_info = FileInfo(
             os.path.join(
@@ -380,6 +392,19 @@ class RelatedArticleFiles(object):
                 self.digital_asset_file_info_items[suffix] = []
             self.digital_asset_file_info_items[suffix].append(f_info)
 
+    @property
+    def xml_file_info(self):
+        return FileInfo(self.xml_file_path)
+
+    @property
+    def xml_file_path(self):
+        return self._xml_file_path
+
+    @xml_file_path.setter
+    def xml_file_path(self, new_name):
+        self._xml_file_path = os.path.join(
+            self.outputs.scielo_package_path, new_name+'.xml')
+
     def tiff2jpg(self):
         # MISSING tiff2jpg (src_path)
         pass
@@ -396,6 +421,14 @@ class RelatedArticleFiles(object):
         if f is not None:
             found.extend(f)
         return (found, alternative_id)
+
+    def pack(self, new_name):
+        for f in self.digital_asset_file_paths:
+            basename = os.path.basename(f)
+            basename = basename.replace(self.name_prefix, new_name+'-')
+            if '-.' in basename:
+                basename = basename.replace('-.', '.')
+            shutil.copyfile(f, os.path.join(self.outputs.scielo_package_path, basename))
 
 
 class PackageName(object):
@@ -430,8 +463,7 @@ class PackageName(object):
 
     @property
     def suppl(self):
-        s = self.doc.volume_suppl \
-            if self.doc.volume_suppl else self.doc.number_suppl
+        s = self.doc.suppl
         if s is not None:
             s = 's' + s if s != '0' else 'suppl'
         return s
