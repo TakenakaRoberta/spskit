@@ -1,0 +1,4 @@
+lxml
+picles.plumber>=0.10
+beautifulsoup4
+packtools

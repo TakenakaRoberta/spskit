@@ -6,7 +6,7 @@ from spskit.qa.style_validator import StyleValidator
 
 
 THIS_PATH = os.path.dirname(os.path.abspath(__file__))
-print(THIS_PATH)
+FIXTURES_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class StyleValidatorTest(unittest.TestCase):
