@@ -42,6 +42,13 @@ class ArticleData:
         self.xml = xml_utils.XML(open(file_path).read())
         self._get_article_location()
 
+    @property
+    def pdf_items(self):
+        pdfs = ['{}.pdf'.format(self.file_info.name)]
+        pdfs += ['{}_{}.pdf'.format(self.file_info.name, lang)
+                 for lang in self.languages[1:]]
+        return pdfs
+
     def nodes(self, xpath):
         elements = []
         if self.xml.tree:
