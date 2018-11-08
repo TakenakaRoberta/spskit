@@ -7,7 +7,9 @@ def parse_issue(issue):
     suppl = None
     compl = None
     if issue is not None:
-        parts = [part for part in issue.strip().lower().split(' ') if part != '']
+        parts = [part
+                 for part in issue.strip().lower().split(' ')
+                 if part != '']
         if len(parts) == 1:
             # suppl or n
             if parts[0].startswith('sup'):

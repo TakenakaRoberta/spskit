@@ -1,5 +1,5 @@
 # coding: utf-8
-from spskit.utils.report_manager import ReportManager, Pipe, Pipeline
+import plumber
 
 
 """
@@ -13,19 +13,24 @@ class RegistrationValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.report_manager = ReportManager(configuration, self._plumber_pipeline)
 
     def validate(self, package, registered_data):
         data = package, registered_data
-        data, report = self.report_manager.create(data)
+        data, report = self._run(data)
         return report
 
-    @property
-    def _plumber_pipeline(self):
-        return Pipeline(self.SetupPipe(), self.SetupPipe())
+    def _run(self, data):
+        return plumber.Pipeline(
+            self.SetupPipe(),
+            self.EndPipe()
+        ).run(data, rewrap=True)
 
-    class SetupPipe(Pipe):
-
+    class SetupPipe(plumber.Pipe):
         def transform(self, data):
             report = {}
             return data, report
+
+    class EndPipe(plumber.Pipe):
+        def transform(self, data):
+            raw, transformed = data
+            return raw, transformed

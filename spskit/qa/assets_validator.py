@@ -14,7 +14,6 @@ class AssetsValidator:
 
         content = self.format_report(asset_file_names, 'Files')
         content += self.format_report(xlinks, 'xlink:href')
-
         content += self.report_content(xlinks, asset_file_names, 'xlink:href not found')
         content += self.report_content(asset_file_names, xlinks, 'Assets not found')
         content += self.report_content(article_data.pdf_items, asset_file_names, 'PDFs not found')

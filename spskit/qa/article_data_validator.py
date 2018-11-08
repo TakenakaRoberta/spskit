@@ -1,28 +1,25 @@
 # coding: utf-8
-from spskit.utils.report_manager import ReportManager, Pipe, Pipeline
 
+import plumber
 
 """
 usa os dados de artigos e journal já registrados
 etc
-
 """
-
-
 class ArticleDataValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration
-        self.report_manager = ReportManager(configuration, self._plumber_pipeline)
 
     def validate(self, data, report_file_path):
-        data, report = self.report_manager.create(data)
+        data, report = self._plumber_pipeline.run(data, rewrap=True)
         with open(report_file_path, 'w') as f:
             f.write(report)
+        return report
 
     @property
     def _plumber_pipeline(self):
-        return Pipeline(
+        return plumber.Pipeline(
             self.SetupPipe(),
             self.spsPipe(),
             self.expiration_spsPipe(),
@@ -70,228 +67,228 @@ class ArticleDataValidator:
             self.endPipe()
         )
 
-    class SetupPipe(Pipe):
+    class SetupPipe(plumber.Pipe):
 
         def transform(self, data):
             report = {}
             return data, report
 
-    class EndPipe(Pipe):
+    class EndPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class spsPipe(Pipe):
+    class spsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class expiration_spsPipe(Pipe):
+    class expiration_spsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class languagePipe(Pipe):
+    class languagePipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class languagesPipe(Pipe):
+    class languagesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class article_typePipe(Pipe):
+    class article_typePipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class journal_titlePipe(Pipe):
+    class journal_titlePipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class publisher_namePipe(Pipe):
+    class publisher_namePipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class journal_id_publisher_idPipe(Pipe):
+    class journal_id_publisher_idPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class journal_id_nlm_taPipe(Pipe):
+    class journal_id_nlm_taPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class journal_issnsPipe(Pipe):
+    class journal_issnsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class months_seasonsPipe(Pipe):
+    class months_seasonsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class issue_labelPipe(Pipe):
+    class issue_labelPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class article_date_typesPipe(Pipe):
+    class article_date_typesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class toc_sectionPipe(Pipe):
+    class toc_sectionPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class doiPipe(Pipe):
+    class doiPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class article_idPipe(Pipe):
+    class article_idPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class paginationPipe(Pipe):
+    class paginationPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class article_id_otherPipe(Pipe):
+    class article_id_otherPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class orderPipe(Pipe):
+    class orderPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class total_of_pagesPipe(Pipe):
+    class total_of_pagesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class total_of_equationsPipe(Pipe):
+    class total_of_equationsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class total_of_tablesPipe(Pipe):
+    class total_of_tablesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class total_of_figuresPipe(Pipe):
+    class total_of_figuresPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class total_of_referencesPipe(Pipe):
+    class total_of_referencesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class ref_display_only_statsPipe(Pipe):
+    class ref_display_only_statsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class contribPipe(Pipe):
+    class contribPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class contrib_idPipe(Pipe):
+    class contrib_idPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class contrib_namesPipe(Pipe):
+    class contrib_namesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class contrib_collabsPipe(Pipe):
+    class contrib_collabsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class affiliationsPipe(Pipe):
+    class affiliationsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class fundingPipe(Pipe):
+    class fundingPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class article_permissionsPipe(Pipe):
+    class article_permissionsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class historyPipe(Pipe):
+    class historyPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class titles_abstracts_keywordPipe(Pipe):
+    class titles_abstracts_keywordPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class related_articlesPipe(Pipe):
+    class related_articlesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class sectionsPipe(Pipe):
+    class sectionsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class paragraphsPipe(Pipe):
+    class paragraphsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class disp_formulasPipe(Pipe):
+    class disp_formulasPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class tablewrapPipe(Pipe):
+    class tablewrapPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class validate_xref_reftypePipe(Pipe):
+    class validate_xref_reftypePipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class missing_xref_listPipe(Pipe):
+    class missing_xref_listPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class refstatsPipe(Pipe):
+    class refstatsPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed
 
-    class refs_sourcesPipe(Pipe):
+    class refs_sourcesPipe(plumber.Pipe):
         def transform(self, data):
             raw, transformed = data
             return raw, transformed

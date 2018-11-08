@@ -1,9 +1,5 @@
 # coding: utf-8
 import os
-import shutil
-
-from spskit.utils.files_utils import delete_file_or_folder
-from spskit.sps.article_pkg import ArticlePackage
 
 
 class VisualValidator:
