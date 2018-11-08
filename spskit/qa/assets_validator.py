@@ -8,16 +8,18 @@ class AssetsValidator:
     def __init__(self, configuration):
         self.configuration = configuration
 
-    def validate(self, article_data, xml_filepath, xml_assets, report_file_path):
+    def validate(self, article_data, xml_filepath, xml_assets,
+            report_file_path):
         xlinks = article_data.internal_xlink_href
         asset_file_names = [os.path.basename(asset) for asset in xml_assets]
-
         content = self.format_report(asset_file_names, 'Files')
         content += self.format_report(xlinks, 'xlink:href')
-        content += self.report_content(xlinks, asset_file_names, 'xlink:href not found')
-        content += self.report_content(asset_file_names, xlinks, 'Assets not found')
-        content += self.report_content(article_data.pdf_items, asset_file_names, 'PDFs not found')
-
+        content += self.report_content(
+            xlinks, asset_file_names, 'xlink:href not found')
+        content += self.report_content(
+            asset_file_names, xlinks, 'Assets not found')
+        content += self.report_content(
+            article_data.pdf_items, asset_file_names, 'PDFs not found')
         with open(report_file_path, 'w') as f:
             f.write(content)
 
@@ -37,7 +39,7 @@ class AssetsValidator:
 
     def format_report(self, items, header):
         if len(items) > 0:
-            content = '\n{}\n'.format(header)
+            content = ['\n{}\n'.format(header)]
             content += [' - {}\n'.format(item) for item in items]
-            return content
+            return ''.join(content)
         return ''

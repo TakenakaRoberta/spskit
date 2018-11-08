@@ -17,7 +17,7 @@ def parse_issue(issue):
             else:
                 number = parts[0]
         elif len(parts) == 2:
-            #n suppl or suppl s or n pr
+            # n suppl or suppl s or n pr
             if parts[0].startswith('sup'):
                 suppl = parts[1]
             elif parts[1].startswith('sup'):
@@ -39,10 +39,11 @@ def parse_issue(issue):
 
 class ArticleData:
 
-    def __init__(self, file_path):
-        self.file_info = FileInfo(file_path)
-        self.xml = xml_utils.XML(open(file_path).read())
-        self._get_article_location()
+    def __init__(self, xml_content):
+        self.xml = xml_utils.XML(xml_content)
+        if self.xml.errors:
+            raise IOError('\n'.join(self.xml.errors))
+        self._set_metadata()
 
     @property
     def pdf_items(self):
@@ -81,13 +82,26 @@ class ArticleData:
 
     @property
     def article_meta(self):
-        return self.xml.find('.//article-meta')
+        return self.xml.tree.find('.//article-meta')
 
     @property
     def journal_meta(self):
-        return self.xml.find('.//journal-meta')
+        return self.xml.tree.find('.//journal-meta')
 
-    def _get_article_location(self):
+    def _set_metadata(self):
+        if self.article_meta is None:
+            self.volume = None
+            self.issue = None
+            self.number, self.suppl, self.compl = (None, None, None)
+            self.fpage = None
+            self.lpage = None
+            self.fpage_seq = None
+            self.elocation_id = None
+            self.doi = None
+            self.publisher_article_id = None
+            self.e_issn = None
+            self.print_issn = None
+            return
         self.volume = self.article_meta.findtext('volume')
         self.issue = self.article_meta.findtext('issue')
         self.number, self.suppl, self.compl = parse_issue(self.issue)

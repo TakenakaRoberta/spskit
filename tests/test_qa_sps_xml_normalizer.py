@@ -1,5 +1,4 @@
 import unittest
-import os
 
 from spskit.qa.sps_xml_normalizer import SPSXMLNormalizer
 from spskit.utils.xml_utils import XML

@@ -3,7 +3,7 @@
 import logging
 
 from lxml import etree
-from io import StringIO, BytesIO
+from io import StringIO
 
 
 class XML(object):
@@ -21,27 +21,28 @@ class XML(object):
     def text(self):
         if self.tree is None:
             return self.original
-        return self.processing_instruction+etree.tostring(self.tree, encoding='unicode')
+        return self.processing_instruction+etree.tostring(
+            self.tree, encoding='unicode')
 
     @text.setter
     def text(self, value):
         self._parse_xml(value)
 
     def _parse_xml(self, text):
-        self.parse_errors = []
+        self.errors = []
         self.tree = None
         try:
             xml = StringIO(text)
             self.tree = etree.parse(xml)
         except etree.XMLSyntaxError as e:
             if hasattr(e, 'message'):
-                self.parse_errors.append(e.message)
+                self.errors.append(e.message)
             else:
-                self.parse_errors.append(str(e))
+                self.errors.append(str(e))
         except Exception as e:
             msg = 'XML._parse_xml(): Unknown error. '
             logging.exception(msg, e)
-            self.parse_errors.append(msg)
+            self.errors.append(msg)
 
     @property
     def pretty_text(self):
@@ -100,7 +101,7 @@ class ValidatedXML(object):
         else:
             self._original_xml = XML(textxml)
             self._pretty_xml = XML(self._original_xml.pretty_text)
-            self.errors = self._pretty_xml.parse_errors
+            self.errors = self._pretty_xml.errors
 
     @property
     def tree(self):

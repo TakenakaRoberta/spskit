@@ -6,6 +6,8 @@ import plumber
 usa os dados de artigos e journal já registrados
 etc
 """
+
+
 class ArticleDataValidator:
 
     def __init__(self, configuration):

@@ -12,7 +12,7 @@ class SPSXMLNormalizer:
         transformed_data = self._plumber_pipeline.run(
             xml_content,
             rewrap=True)
-        return next(transformed_data)
+        return transformed_data
 
     @property
     def _plumber_pipeline(self):

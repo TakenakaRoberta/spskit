@@ -44,7 +44,8 @@ class StructureValidatorTest(unittest.TestCase):
         xml = '<article specific-use="1.8"/>'
         article_data = '1.8'
         self._write_xml(xml)
-        result = self.validator.validate(article_data, self.xml_filepath, self.report_file_path)
+        result = self.validator.validate(
+            article_data, self.xml_filepath, self.report_file_path)
         report_content = self._read_file(self.report_file_path)
         self.assertTrue(result)
         self.assertEqual(report_content, '')

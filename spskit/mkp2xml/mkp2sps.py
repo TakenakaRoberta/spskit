@@ -131,7 +131,7 @@ class DraftSPSXML:
     def replace_href_values(self, new_name):
         replacements = []
         for elem in self.bs.find_all(attrs={'xlink:href': not None}):
-            if not ':' in elem['xlink:href']:
+            if ':' not in elem['xlink:href']:
                 previous = elem['xlink:href']
                 f = FileInfo(previous)
                 new = f.basename.replace(self.file_info.name_prefix, new_name)
