@@ -1,42 +1,13 @@
 # coding: utf-8
 
-import os
 import sys
 import argparse
 from .mkp2xml.mkp2sps import SGMLXML2SPSXML
 from .qa.sps_qa import SPSPackageQA
-
-
-def display_text(text):
-    return text
+from .frontdesk import evaluate_xml_path, display_text
 
 
 _ = display_text
-
-
-def evaluate_xml_path(xml_path):
-    errors = []
-    sgm_xml = None
-    xml_list = None
-
-    if xml_path is None:
-        errors.append(_('Missing XML location. '))
-    elif os.path.isfile(xml_path):
-        if xml_path.endswith('.sgm.xml'):
-            sgm_xml = xml_path
-        elif xml_path.endswith('.xml'):
-            xml_list = [xml_path]
-        else:
-            errors.append(_('Invalid file. XML file required. '))
-    elif os.path.isdir(xml_path):
-        xml_list = [os.path.join(xml_path, item)
-                    for item in os.listdir(xml_path)
-                    if item.endswith('.xml')]
-        if len(xml_list) == 0:
-            errors.append(_('Invalid folder. Folder must have XML files. '))
-    else:
-        errors.append(_('Missing XML location. '))
-    return sgm_xml, xml_list, errors
 
 
 def execute_xpm(xml, configuration, outputs_path):
