@@ -2,6 +2,7 @@
 
 import sys
 import argparse
+from spskit.frontdesk import execute_xpm
 
 
 if __name__ == '__main__':
@@ -18,7 +19,7 @@ if __name__ == '__main__':
 
         inputs = parser.parse_args()
         result, outputs = execute_xpm(
-            inputs.xml, configuration, acron=input.acron)
+            inputs.xml, configuration={}, acron=inputs.acron)
         if result is False:
             print('\n'.join(outputs))
         else:
