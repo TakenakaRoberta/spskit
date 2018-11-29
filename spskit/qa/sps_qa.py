@@ -11,38 +11,6 @@ from spskit.qa.sps_xml_normalizer import SPSXMLNormalizer
 from spskit.sps.article_data import ArticleData
 
 
-class Package:
-
-    def __init__(self, files):
-        self.files = files
-        self._organize()
-
-    def _organize(self):
-        self.organized = {}
-        self.invalid_files = []
-        for f in self.files:
-            basename = os.path.basename(f)
-            name, ext = os.path.splitext(basename)
-            prefix = None
-            if ext == '.xml':
-                prefix = name
-            elif '-' in name:
-                prefix = name[:name.rfind('-')]
-
-            if prefix is None:
-                self.invalid_files.append(f)
-            else:
-                if self.organized.get(prefix) is None:
-                    self.organized[prefix] = {}
-                    self.organized[prefix]['xml'] = None
-                    self.organized[prefix]['assets'] = []
-                if ext == '.xml':
-                    self.organized[prefix]['xml'] = f
-                else:
-                    self.organized[prefix]['assets'].append(f)
-        for prefix, files in self.organized.items():
-            if files.get('xml') is None:
-                self.invalid_files.extend(files['assets'])
 
 
 class PkgReception:
