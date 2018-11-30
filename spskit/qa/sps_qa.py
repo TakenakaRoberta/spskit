@@ -11,8 +11,6 @@ from spskit.qa.sps_xml_normalizer import SPSXMLNormalizer
 from spskit.sps.article_data import ArticleData
 
 
-
-
 class PkgReception:
 
     def __init__(self, configuration):

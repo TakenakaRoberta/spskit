@@ -23,7 +23,7 @@ class AssetsValidatorTest(unittest.TestCase):
         self.xml = '<article lang="pt" xmlns:xlink="http://www.w3.org/1999/xlink"><body><graphic xlink:href="f01.jpg"/><graphic xlink:href="f02.jpg"/></body><sub-article lang="en"/></article>'
         self.asset_files = ['f01.jpg', 'f02.jpg', 'file.pdf', 'file-en.pdf']
         self.report_path = 'report.txt'
-        self.article_data = ArticleData(self.xml)
+        self.article_data = ArticleData(self.xml, 'file')
         self.assertTrue(self.article_data.xml.tree, not None)
         self.validator = AssetsValidator({})
 

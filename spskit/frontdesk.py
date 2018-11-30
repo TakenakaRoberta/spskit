@@ -1,6 +1,8 @@
 # coding: utf-8
 
 import os
+import shutil
+
 from .mkp2xml.mkp2sps import SGMLXML2SPSXML
 from .qa.sps_qa import SPSPackageQA
 

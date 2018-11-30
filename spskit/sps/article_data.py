@@ -1,5 +1,4 @@
 from spskit.utils import xml_utils
-from spskit.utils.files_utils import FileInfo
 
 
 def parse_issue(issue):
@@ -39,7 +38,8 @@ def parse_issue(issue):
 
 class ArticleData:
 
-    def __init__(self, xml_content):
+    def __init__(self, xml_content, xml_name):
+        self.xml_name = xml_name
         self.xml = xml_utils.XML(xml_content)
         if self.xml.errors:
             raise IOError('\n'.join(self.xml.errors))
@@ -47,21 +47,28 @@ class ArticleData:
 
     @property
     def pdf_items(self):
-        pdfs = ['{}.pdf'.format(self.file_info.name)]
-        pdfs += ['{}_{}.pdf'.format(self.file_info.name, lang)
+        pdfs = ['{}.pdf'.format(self.xml_name)]
+        pdfs += ['{}_{}.pdf'.format(self.xml_name, lang)
                  for lang in self.languages[1:]]
         return pdfs
 
-    def nodes(self, xpath):
+    def nodes_info(self, xpath):
         elements = []
         if self.xml.tree:
             for node in self.xml.tree.findall(xpath):
                 elements.append((self.xml.tree.getpath(node), node))
         return elements
 
+    def nodes(self, xpath):
+        elements = []
+        if self.xml.tree:
+            for node in self.xml.tree.findall(xpath):
+                elements.append(node)
+        return elements
+
     @property
     def sps_version(self):
-        return self.xml.tree.getroot().get('sps')
+        return self.xml.tree.getroot().get('specific-use')
 
     @property
     def xlink_href(self):
@@ -76,9 +83,8 @@ class ArticleData:
     @property
     def languages(self):
         nodes = self.nodes('.//article') + self.nodes('.//sub-article')
-        languages = [node.get('{http://www.w3.org/XML/1998/namespace}lang')
-                     for node in nodes]
-        return [languages[0]] + [item for item in languages[1:] if item != languages[0]]
+        return [node.get('{http://www.w3.org/XML/1998/namespace}lang')
+                for node in nodes]
 
     @property
     def article_meta(self):
@@ -105,9 +111,10 @@ class ArticleData:
         self.volume = self.article_meta.findtext('volume')
         self.issue = self.article_meta.findtext('issue')
         self.number, self.suppl, self.compl = parse_issue(self.issue)
-        self.fpage = self.article_meta.findtext('fpage')
+        fpage = self.article_meta.find('fpage')
+        self.fpage = fpage.text
         self.lpage = self.article_meta.findtext('lpage')
-        self.fpage_seq = None if self.fpage is None else self.fpage.get('seq')
+        self.fpage_seq = None if fpage is None else fpage.get('seq')
         self.elocation_id = self.article_meta.findtext('elocation-id')
         self.doi = self.article_meta.findtext('article-id[@pub-id-type="doi"]')
         self.publisher_article_id = self.article_meta.findtext('article-id[@pub-id-type="publisher-id"]')

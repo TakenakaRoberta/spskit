@@ -8,18 +8,18 @@ class AssetsValidator:
     def __init__(self, configuration):
         self.configuration = configuration
 
-    def validate(self, article_data, xml_filepath, xml_assets,
+    def validate(self, article_data, xml_filepath, related_files,
             report_file_path):
         xlinks = article_data.internal_xlink_href
-        asset_file_names = [os.path.basename(asset) for asset in xml_assets]
-        content = self.format_report(asset_file_names, 'Files')
+        related_file_names = [os.path.basename(asset) for asset in related_files]
+        content = self.format_report(related_file_names, 'Files')
         content += self.format_report(xlinks, 'xlink:href')
         content += self.report_content(
-            xlinks, asset_file_names, 'xlink:href not found')
+            xlinks, related_file_names, 'xlink:href not found')
         content += self.report_content(
-            asset_file_names, xlinks, 'Assets not found')
+            related_file_names, xlinks, 'Assets not found')
         content += self.report_content(
-            article_data.pdf_items, asset_file_names, 'PDFs not found')
+            article_data.pdf_items, related_file_names, 'PDFs not found')
         with open(report_file_path, 'w') as f:
             f.write(content)
 
