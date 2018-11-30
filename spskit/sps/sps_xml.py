@@ -3,7 +3,7 @@ import plumber
 from spskit.utils.xml_utils import XML
 
 
-class SPSXMLNormalizer:
+class SPSXML:
 
     def __init__(self, configuration):
         self.configuration = configuration
