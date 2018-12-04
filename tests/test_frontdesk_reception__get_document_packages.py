@@ -1,8 +1,10 @@
 import unittest
 import os
 
-import spskit.sps.article_packages as article_packages
+import spskit.frontdesk.reception as reception
+from spskit.utils.xml_utils import XML
 from spskit.utils.files_utils import FileInfo
+from spskit.sps.document_data import DocumentData
 
 
 TEST_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -22,25 +24,37 @@ class ArticlePackagesTest(unittest.TestCase):
         ]
         xml_pkg_items = [
             {
-                'xml': xml_file,
+                'xml_file': xml_file,
                 'related_files': xml_related_files,
             }
         ]
-        article_pkg_items = article_packages.get_article_packages(xml_pkg_items)
+        article_pkg_items = reception.get_document_packages(xml_pkg_items)
         result = article_pkg_items
+        with open(xml_file, 'rb') as fp:
+            xmlcontent = fp.read().decode('utf-8')
+        xml = XML(xmlcontent)
         expected = [
             {
-                'xml': xml_file,
+                'xml_file': xml_file,
+                'content': xmlcontent,
+                'xml': xml,
+                'data': DocumentData(xml),
                 'related_files': xml_related_files,
                 'assets': [],
                 'attachments': xml_related_files
             }
         ]
         self.assertEqual(
-            result[0]['xml'], expected[0]['xml'])
+            result[0]['xml_file'], expected[0]['xml_file'])
         self.assertEqual(
             result[0]['related_files'], expected[0]['related_files'])
         self.assertEqual(
             result[0]['assets'], expected[0]['assets'])
         self.assertEqual(
             result[0]['attachments'], expected[0]['attachments'])
+        self.assertEqual(
+            result[0]['xml'], expected[0]['xml'])
+        self.assertEqual(
+            result[0]['content'], expected[0]['content'])
+        self.assertEqual(
+            result[0]['data'], expected[0]['data'])

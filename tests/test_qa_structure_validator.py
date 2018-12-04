@@ -30,9 +30,9 @@ class StructureValidatorTest(unittest.TestCase):
                 os.unlink(f)
 
     def test_validate_with_error(self):
-        article_data = '1.8'
+        document_data = '1.8'
         self._write_xml('<article>')
-        result = self.validator.validate(article_data, self.xml_filepath, self.report_file_path)
+        result = self.validator.validate(document_data, self.xml_filepath, self.report_file_path)
         report_content = self._read_file(self.report_file_path)
         self.assertIn(
             'Premature end of data in tag article line 1',
@@ -42,10 +42,10 @@ class StructureValidatorTest(unittest.TestCase):
 
     def test_validate_valid(self):
         xml = '<article specific-use="1.8"/>'
-        article_data = '1.8'
+        document_data = '1.8'
         self._write_xml(xml)
         result = self.validator.validate(
-            article_data, self.xml_filepath, self.report_file_path)
+            document_data, self.xml_filepath, self.report_file_path)
         report_content = self._read_file(self.report_file_path)
         self.assertTrue(result)
         self.assertEqual(report_content, '')

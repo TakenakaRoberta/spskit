@@ -1,14 +1,14 @@
 import unittest
 import os
 
-import spskit.sps.package as package
+import spskit.frontdesk.reception as reception
 from spskit.utils.files_utils import FileInfo
 
 
 FIXTURES_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-class PackageTest(unittest.TestCase):
+class GetXMLPackageTest(unittest.TestCase):
 
     def get_file_info_items(self, files):
         return [FileInfo(f) for f in files]
@@ -16,7 +16,7 @@ class PackageTest(unittest.TestCase):
     def test_package_file_1(self):
         files = ['abc-1234.xml', 'abc-1234-gf01.jpg', 'abc-1234.pdf',
                  'abc-1234-es.pdf', 'a01.sgm.xml']
-        xml_pkg, invalid_files = package.get_xml_packages(
+        xml_pkg, invalid_files = reception.get_xml_packages(
             self.get_file_info_items(files))
         result = xml_pkg
         expected = [
@@ -32,7 +32,7 @@ class PackageTest(unittest.TestCase):
     def test_package_file_2(self):
         files = ['abc-1234.xml', 'abc-1234-gf01.jpg', 'abc-1234.pdf',
                  'abc-1234-es.pdf']
-        xml_pkg, invalid_files = package.get_xml_packages(
+        xml_pkg, invalid_files = reception.get_xml_packages(
             self.get_file_info_items(files))
         result = xml_pkg
         expected = [
@@ -51,7 +51,7 @@ class PackageTest(unittest.TestCase):
                  'abc-1235.xml', 'abc-1235-gf01.jpg', 'abc-1235-gf02.jpg',
                  'abc-1236.xml', 'abc-1236-gf01.jpg', 'abc-1236.pdf',
                  'tubm', 'tubm.txt']
-        xml_pkg, invalid_files = package.get_xml_packages(
+        xml_pkg, invalid_files = reception.get_xml_packages(
             self.get_file_info_items(files))
         result = xml_pkg
         expected = [
@@ -73,7 +73,7 @@ class PackageTest(unittest.TestCase):
 
     def test_package_file_4(self):
         files = ['abc-1234-gf01.jpg', 'abc-1234.pdf', 'abc-1234-es.pdf']
-        xml_pkg, invalid_files = package.get_xml_packages(
+        xml_pkg, invalid_files = reception.get_xml_packages(
             self.get_file_info_items(files))
         result = xml_pkg
         expected = []

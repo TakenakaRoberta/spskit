@@ -5,7 +5,7 @@ from spskit.qa.style_validator import StyleValidator
 from spskit.qa.visual_validator import VisualValidator
 
 
-class ArticleXMLValidator:
+class DocumentXMLValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration

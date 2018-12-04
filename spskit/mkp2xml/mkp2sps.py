@@ -3,10 +3,12 @@ import shutil
 
 from bs4 import BeautifulSoup
 
+from spskit.utils.xml_utils import XML
 from spskit.utils.xml_transformer import XMLTransformer
+
 from spskit.utils.files_utils import FileInfo
 from spskit.qa.sps_qa import Outputs
-from spskit.sps.article_data import ArticleData
+from spskit.sps.document_data import DocumentData
 
 
 from mimetypes import MimeTypes
@@ -73,7 +75,10 @@ class SGMLXML2SPSXML:
                           self.files.work_xml_file_info.file_path)
 
         # normaliza xml
-        doc = ArticleData(self.files.work_xml_file_info.file_path)
+        with open(self.files.work_xml_file_info.file_path, 'rb') as fp:
+            xmlcontent = fp.read().decode('utf-8')
+        xml = XML(xmlcontent)
+        doc = DocumentData(xml)
         new_name = PackageName(doc).get()
 
         # pacote

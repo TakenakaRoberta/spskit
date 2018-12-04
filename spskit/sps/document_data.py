@@ -1,4 +1,3 @@
-from spskit.utils import xml_utils
 
 
 def parse_issue(issue):
@@ -36,11 +35,11 @@ def parse_issue(issue):
     return (number, suppl, compl)
 
 
-class ArticleData:
+class DocumentData:
 
-    def __init__(self, xml_content, xml_name):
+    def __init__(self, xml, xml_name):
         self.xml_name = xml_name
-        self.xml = xml_utils.XML(xml_content)
+        self.xml = xml
         if self.xml.errors:
             raise IOError('\n'.join(self.xml.errors))
         self._set_metadata()

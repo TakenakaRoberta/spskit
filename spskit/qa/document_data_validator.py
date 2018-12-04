@@ -8,7 +8,7 @@ etc
 """
 
 
-class ArticleDataValidator:
+class DocumentDataValidator:
 
     def __init__(self, configuration):
         self.configuration = configuration

@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from spskit.sps.article_data import ArticleData
+from spskit.sps.document_data import DocumentData
 from spskit.qa.assets_validator import AssetsValidator
 
 
@@ -23,8 +23,8 @@ class AssetsValidatorTest(unittest.TestCase):
         self.xml = '<article lang="pt" xmlns:xlink="http://www.w3.org/1999/xlink"><body><graphic xlink:href="f01.jpg"/><graphic xlink:href="f02.jpg"/></body><sub-article lang="en"/></article>'
         self.asset_files = ['f01.jpg', 'f02.jpg', 'file.pdf', 'file-en.pdf']
         self.report_path = 'report.txt'
-        self.article_data = ArticleData(self.xml, 'file')
-        self.assertTrue(self.article_data.xml.tree, not None)
+        self.document_data = DocumentData(self.xml, 'file')
+        self.assertTrue(self.document_data.xml.tree, not None)
         self.validator = AssetsValidator({})
 
     def test_find_items_in_list(self):

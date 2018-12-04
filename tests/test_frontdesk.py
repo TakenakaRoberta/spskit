@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from spskit import frontdesk
+from spskit.frontdesk import frontdesk
 
 
 _ = frontdesk.display_text

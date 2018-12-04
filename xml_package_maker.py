@@ -2,7 +2,7 @@
 
 import sys
 import argparse
-from spskit.frontdesk import execute_xpm
+from spskit.frontdesk.frontdesk import execute_xpm
 
 
 if __name__ == '__main__':
