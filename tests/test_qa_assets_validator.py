@@ -10,15 +10,6 @@ FIXTURES_PATH = os.path.dirname(os.path.abspath(__file__))
 
 class AssetsValidatorTest(unittest.TestCase):
 
-    def _write_xml(self, content):
-        with open('file.xml', 'wb') as f:
-            f.write(content.encode('utf-8'))
-
-    def _read_file(self, file_path):
-        with open(file_path, 'rb') as f:
-            content = f.read().decode('utf-8')
-        return content
-
     def setUp(self):
         self.xml = '<article lang="pt" xmlns:xlink="http://www.w3.org/1999/xlink"><body><graphic xlink:href="f01.jpg"/><graphic xlink:href="f02.jpg"/></body><sub-article lang="en"/></article>'
         self.asset_files = ['f01.jpg', 'f02.jpg', 'file.pdf', 'file-en.pdf']

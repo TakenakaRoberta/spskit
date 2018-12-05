@@ -1,7 +1,7 @@
 import unittest
 
 from spskit.sps.sps_xml import SPSXML
-from spskit.utils.xml_utils import XML
+from spskit.sps.xml_content import XMLContent
 
 
 def fun(x):
@@ -20,13 +20,7 @@ class SPSXMLTest(unittest.TestCase):
 
     def test_SetupPipe(self):
         input_content = '<?xml version="1.0" encoding="utf-8"?>\n<article></article>'
-        expected = '<?xml version="1.0" encoding="utf-8"?><article/>'
-        result = self.sps_xml.SetupPipe().transform(input_content)
-        self.assertEqual(result[0], input_content)
-        self.assertEqual(result[1].text, expected)
-
-    def test_EndPipe(self):
-        expected = '<?xml version="1.0" encoding="utf-8"?><article/>'
-        xml = XML(expected)
-        result = self.sps_xml.EndPipe().transform(('<article/>', xml))
-        self.assertEqual(result, expected)
+        xmlcontent = XMLContent(input_content, 'name')
+        result = self.sps_xml.SetupPipe().transform(xmlcontent.xml)
+        self.assertEqual(result[0], xmlcontent.xml)
+        self.assertEqual(result[1], xmlcontent.xml)

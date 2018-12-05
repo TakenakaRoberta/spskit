@@ -6,7 +6,7 @@ from spskit.sps.document_data import DocumentData
 from spskit.utils.files_utils import FileInfo
 
 
-sps_xml = SPSXML({})
+spsxml = SPSXML({})
 
 
 class XMLFile:
@@ -15,21 +15,26 @@ class XMLFile:
         file_info = FileInfo(xml_file_path)
         self.xml_file_path = xml_file_path
         self.xml_name = file_info.name_prefix
+        self.content = self.file_content
 
     @property
-    def xml_content(self):
+    def file_content(self):
         if os.path.isfile(self.xml_file_path):
             with open(self.xml_file_path, 'rb') as fp:
                 content = fp.read().decode('utf-8')
             return content
 
     @property
-    def xml(self):
-        return XML(self.xml_content)
+    def content(self):
+        return self.xml.text
+
+    @content.setter
+    def content(self, content):
+        self.xml = XML(content)
 
     @property
     def sps_xml(self):
-        return sps_xml.normalize(self.xml)
+        return spsxml.normalize(self.xml)
 
     @property
     def document_data(self):

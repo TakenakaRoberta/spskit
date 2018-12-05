@@ -4,22 +4,26 @@ from spskit.sps.sps_xml import SPSXML
 from spskit.sps.document_data import DocumentData
 
 
-sps_xml = SPSXML({})
+spsxml = SPSXML({})
 
 
 class XMLContent:
 
-    def __init__(self, xml_content, xml_name):
-        self.xml_content = xml_content
+    def __init__(self, content, xml_name):
+        self.content = content
         self.xml_name = xml_name
 
     @property
-    def xml(self):
-        return XML(self.xml_content)
+    def content(self):
+        return self.xml.text
+
+    @content.setter
+    def content(self, content):
+        self.xml = XML(content)
 
     @property
     def sps_xml(self):
-        return sps_xml.normalize(self.xml)
+        return spsxml.normalize(self.xml)
 
     @property
     def document_data(self):

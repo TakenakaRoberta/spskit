@@ -8,7 +8,7 @@ from spskit.utils.files_utils import FileInfo
 FIXTURES_PATH = os.path.dirname(os.path.abspath(__file__))
 
 
-class GetXMLPackageTest(unittest.TestCase):
+class GetXMLPackagesTest(unittest.TestCase):
 
     def get_file_info_items(self, files):
         return [FileInfo(f) for f in files]
@@ -20,7 +20,8 @@ class GetXMLPackageTest(unittest.TestCase):
             self.get_file_info_items(files))
         result = xml_pkg
         expected = [
-            {'xml': 'abc-1234.xml',
+            {'xml_file': 'abc-1234.xml',
+             'name': 'abc-1234',
              'related_files':
                 ['abc-1234-gf01.jpg', 'abc-1234.pdf', 'abc-1234-es.pdf']}]
         self.assertEqual(result, expected)
@@ -36,7 +37,8 @@ class GetXMLPackageTest(unittest.TestCase):
             self.get_file_info_items(files))
         result = xml_pkg
         expected = [
-            {'xml': 'abc-1234.xml',
+            {'xml_file': 'abc-1234.xml',
+             'name': 'abc-1234',
              'related_files':
                 ['abc-1234-gf01.jpg', 'abc-1234.pdf', 'abc-1234-es.pdf']}]
         self.assertEqual(result, expected)
@@ -55,13 +57,16 @@ class GetXMLPackageTest(unittest.TestCase):
             self.get_file_info_items(files))
         result = xml_pkg
         expected = [
-            {'xml': 'abc-1234.xml',
+            {'xml_file': 'abc-1234.xml',
+             'name': 'abc-1234',
              'related_files':
                 ['abc-1234-gf01.jpg', 'abc-1234.pdf', 'abc-1234-es.pdf']},
-            {'xml': 'abc-1235.xml',
+            {'xml_file': 'abc-1235.xml',
+             'name': 'abc-1235',
              'related_files':
                 ['abc-1235-gf01.jpg', 'abc-1235-gf02.jpg']},
-            {'xml': 'abc-1236.xml',
+            {'xml_file': 'abc-1236.xml',
+             'name': 'abc-1236',
              'related_files':
                 ['abc-1236-gf01.jpg', 'abc-1236.pdf']},
         ]
