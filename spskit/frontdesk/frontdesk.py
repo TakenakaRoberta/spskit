@@ -3,8 +3,8 @@
 import os
 import shutil
 
-from .mkp2xml.mkp2sps import SGMLXML2SPSXML
-from .qa.sps_qa import SPSPackageQA
+from spskit.mkp2xml.mkp2sps import SGMLXML2SPSXML
+from spskit.qa.sps_qa import SPSPackageQA
 
 
 def display_text(text):

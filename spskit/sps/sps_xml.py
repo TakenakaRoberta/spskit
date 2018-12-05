@@ -1,6 +1,5 @@
 # coding: utf-8
 import plumber
-from spskit.utils.xml_utils import XML
 
 
 class SPSXML:
@@ -8,9 +7,9 @@ class SPSXML:
     def __init__(self, configuration):
         self.configuration = configuration
 
-    def normalize(self, xml_content):
+    def normalize(self, xml):
         transformed_data = self._plumber_pipeline.run(
-            xml_content,
+            xml,
             rewrap=True)
         return transformed_data
 
@@ -23,11 +22,10 @@ class SPSXML:
 
     class SetupPipe(plumber.Pipe):
         def transform(self, data):
-            xml_content = data
-            sps_xml = XML(xml_content)
-            return xml_content, sps_xml
+            xml = data
+            return xml
 
     class EndPipe(plumber.Pipe):
         def transform(self, data):
-            xml_content, sps_xml = data
-            return sps_xml.text
+            xml = data
+            return xml
