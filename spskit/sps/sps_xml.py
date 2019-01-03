@@ -11,7 +11,7 @@ class SPSXML:
 
     def normalize(self, xml):
         raw, transformed_data = self._plumber_pipeline.run(xml, rewrap=True)
-        return transformed_data
+        return raw, transformed_data
 
     @property
     def _plumber_pipeline(self):
