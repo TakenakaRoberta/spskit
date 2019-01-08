@@ -2,11 +2,9 @@ import unittest
 import os
 
 import spskit.frontdesk.reception as reception
-from spskit.utils.xml_utils import XML
-from spskit.utils.files_utils import FileInfo
-from spskit.sps.xml_content import XMLContent
-from spskit.sps.xml_file import XMLFile
 from spskit.sps.document_data import DocumentData
+from spskit.utils.files_utils import FileInfo
+from spskit.utils.xml_utils import XML
 
 
 TEST_PATH = os.path.dirname(os.path.abspath(__file__))
@@ -19,27 +17,27 @@ class GetDocumentPackagesTest(unittest.TestCase):
         return [FileInfo(f) for f in files]
 
     def test_package_file_1(self):
-        xml_file = os.path.join(PKG_PATH, '0034-8910-rsp-48-01-0001.xml')
+        xml_file_path = os.path.join(PKG_PATH, '0034-8910-rsp-48-01-0001.xml')
         xml_related_files = [
             os.path.join(PKG_PATH, '0034-8910-rsp-48-01-0001.pdf'),
             os.path.join(PKG_PATH, '0034-8910-rsp-48-01-0001-en.pdf'),
         ]
         xml_pkg_items = [
             {
-                'xml_file': xml_file,
+                'xml_file': xml_file_path,
                 'related_files': xml_related_files,
             }
         ]
         article_pkg_items = reception.get_document_packages(xml_pkg_items)
         result = article_pkg_items
-        xmlfile = XMLFile(xml_file)
+        xml = XML(xml_file_path)
         expected = [
-            {   
+            {
                 'name': '0034-8910-rsp-48-01-0001',
-                'xml_file': xml_file,
-                'content': xmlfile.content,
-                'xml': xmlfile.xml,
-                'data': xmlfile.document_data,
+                'xml_file': xml_file_path,
+                'content': xml.text,
+                'xml': xml,
+                'data': DocumentData(xml, 'name'),
                 'related_files': xml_related_files,
                 'assets': [],
                 'attachments': xml_related_files
@@ -54,8 +52,8 @@ class GetDocumentPackagesTest(unittest.TestCase):
         self.assertEqual(
             result[0]['attachments'], expected[0]['attachments'])
         self.assertEqual(
-            result[0]['xml'], expected[0]['xml'])
+            result[0]['xml'].text, expected[0]['xml'].text)
         self.assertEqual(
             result[0]['content'], expected[0]['content'])
-        self.assertEqual(
-            result[0]['data'], expected[0]['data'])
+        self.assertIsInstance(
+            result[0]['data'], DocumentData)

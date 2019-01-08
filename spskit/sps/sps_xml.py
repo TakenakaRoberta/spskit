@@ -1,5 +1,4 @@
 # coding: utf-8
-from copy import deepcopy
 
 import plumber
 
@@ -10,8 +9,8 @@ class SPSXML:
         self.configuration = configuration
 
     def normalize(self, xml):
-        raw, transformed_data = self._plumber_pipeline.run(xml, rewrap=True)
-        return raw, transformed_data
+        transformed_data = self._plumber_pipeline.run(xml, rewrap=True)
+        return next(transformed_data)
 
     @property
     def _plumber_pipeline(self):

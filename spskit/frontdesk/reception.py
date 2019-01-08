@@ -5,7 +5,8 @@ import shutil
 
 
 from spskit.utils.files_utils import FileInfo
-from spskit.sps.xml_file import XMLFile
+from spskit.utils.xml_utils import XML
+from spskit.sps.document_data import DocumentData
 
 
 def destinate_files(files, destination_path, delete):
@@ -53,18 +54,21 @@ def get_document_packages(xml_packages):
     document_packages = []
     for xml_pkg in xml_packages:
         files = xml_pkg['related_files']
-        xml_pkg['xml'] = XMLFile(xml_pkg['xml_file'])
-
+        xml_pkg['xml'] = XML(xml_pkg['xml_file'])
+        document_data = DocumentData(xml_pkg['xml'], xml_pkg['xml'].file_info.name_prefix)
+        xml_pkg['data'] = document_data
         assets = []
         attachments = []
         for f in files:
             basename = os.path.basename(f)
-            if basename in xml_pkg['xml'].document_data.internal_xlink_href:
+            if basename in document_data.internal_xlink_href:
                 assets.append(f)
             else:
                 attachments.append(f)
         xml_pkg['assets'] = assets
         xml_pkg['attachments'] = attachments
+        xml_pkg['content'] = xml_pkg['xml'].text
+        
         document_packages.append((xml_pkg))
     return document_packages
 

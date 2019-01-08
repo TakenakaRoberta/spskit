@@ -1,21 +1,33 @@
 # coding: utf-8
-
+import os
 import logging
 
 from lxml import etree
 from io import StringIO
 
+from spskit.utils.files_utils import FileInfo
+
 
 class XML(object):
 
-    def __init__(self, textxml):
-        self.original = textxml
-        textxml = textxml.strip()
-        self.processing_instruction = ''
-        if textxml.startswith('<?xml'):
-            self.processing_instruction = textxml[:textxml.find('?>')+2]
-            textxml = textxml[len(self.processing_instruction):].strip()
-        self.text = textxml
+    def __init__(self, text_or_file):
+        text_or_file = text_or_file.strip()
+        if text_or_file.startswith('<') and text_or_file.endswith('>'):
+            self.original = text_or_file
+            self.file_info = None
+            self.split_processing_instruction()
+        elif os.path.isfile(text_or_file):
+            self.file_info = FileInfo(text_or_file)
+            self.original = self.file_info.read()
+            self.split_processing_instruction()
+
+    def split_processing_instruction(self):
+        if self.original.startswith('<?xml'):
+            self.processing_instruction = self.original[:self.original.find('?>')+2]
+            self.text = self.original[len(self.processing_instruction):].strip()
+        else:
+            self.processing_instruction = ''
+            self.text = self.original
 
     @property
     def text(self):
