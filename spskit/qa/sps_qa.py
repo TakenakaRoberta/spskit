@@ -130,20 +130,25 @@ class SPSPackageQA:
         outputs = Outputs(outputs_path)
         document_packages = get_document_packages(files, outputs.path, delete)
         if len(files) > 1:
-            document_packages['pkg_data_validations'] = \
-                self.validate_document_packages(document_packages, outputs)
+            document_packages = self.validate_document_packages(
+                document_packages, outputs)
         return document_packages, outputs
 
-    def validate_document_packages(self, packages, outputs):
-        for package in packages:
-            self._validate_article(
-                package, ReportFiles(package['name'], outputs.reports_path))
-            data, pkg_data_validation_report_content = self.pkg_data_validator.validate(package)
+    def validate_document_packages(self, document_packages, outputs):
+        for doc_pkg in document_packages:
+            self._validate_document_package(
+                doc_pkg, ReportFiles(doc_pkg.name, outputs.reports_path))
+            data, pkg_data_validation_report_content = \
+                self.pkg_data_validator.validate(doc_pkg)
         return pkg_data_validation_report_content
 
-    def _validate_article(self, pkg_item, report_files):
-        xml_file_path = pkg_item['xml_file']
-        asset_file_paths = pkg_item['assets']
-        self.document_xml_validator.validate(pkg_item['data'], xml_file_path, asset_file_paths, report_files)
-        pkg_item['reports'] = report_files
-        self.document_data_validator.validate(pkg_item, report_files.xml_content_validations_filename)
+    def _validate_document_package(self, doc_pkg, report_files):
+        xml_file_path = doc_pkg.xml_file
+        asset_file_paths = doc_pkg.assets
+        self.document_xml_validator.validate(
+            doc_pkg.document_data, xml_file_path,
+            asset_file_paths,
+            report_files)
+        doc_pkg.reports = report_files
+        self.document_data_validator.validate(
+            doc_pkg, report_files.xml_content_validations_filename)

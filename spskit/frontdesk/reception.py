@@ -5,8 +5,8 @@ import shutil
 
 
 from spskit.utils.files_utils import FileInfo
-from spskit.utils.xml_utils import XML
-from spskit.sps.document_data import DocumentData
+from spskit.models.xml_package import XMLPackage
+from spskit.models.document_package import DocumentPackage
 
 
 def classify_files(received_files, destination_path, delete):
@@ -41,49 +41,22 @@ def group_files_in_xml_packages(file_info_items):
             prefix = prefix[: prefix.rfind("-")]
         if prefix in xml_prefixes:
             if xml_packages.get(prefix) is None:
-                xml_packages[prefix] = {}
-                xml_packages[prefix]["name"] = prefix
-                xml_packages[prefix]["xml_file"] = None
-                xml_packages[prefix]["related_files"] = []
+                xml_packages[prefix] = XMLPackage(prefix)
             if file_info.ext == ".xml":
-                xml_packages[prefix]["xml_file"] = file_info.file_path
+                xml_packages[prefix].xml_file = file_info.file_path
             else:
-                xml_packages[prefix]["related_files"].append(file_info.file_path)
+                related_files = xml_packages[prefix].related_files
+                related_files.append(file_info.file_path)
+                xml_packages[prefix].related_files = related_files
         else:
             invalid_files.append(file_info.file_path)
-    xml_packages = [xml_packages[k] for k in sorted(xml_packages.keys())]
     return xml_packages, invalid_files
 
 
-def add_document_info(xml_packages):
-    """
-    A partir de xml_packages (um dicionário de pacotes de XML),
-    retorna document_packages (o mesmo dicionário acrescido de ativos digitais,
-    dados do documento, arquivos anexos, etc)
-    """
-    document_packages = []
-    for xml_pkg in xml_packages:
-        files = xml_pkg["related_files"]
-        xml_pkg["xml"] = XML(xml_pkg["xml_file"])
-        xml_pkg["data"] = DocumentData(
-            xml_pkg["xml"], xml_pkg["xml"].file_info.name_prefix
-        )
-        assets = []
-        attachments = []
-        for f in files:
-            basename = os.path.basename(f)
-            if basename in xml_pkg["data"].internal_xlink_href:
-                assets.append(f)
-            else:
-                attachments.append(f)
-        xml_pkg["assets"] = assets
-        xml_pkg["attachments"] = attachments
-        document_packages.append((xml_pkg))
-    return document_packages
-
-
 def get_document_packages(input_files, destination_path, delete=False):
-    file_info_items = classify_files(
-        input_files, destination_path, delete)
+    file_info_items = classify_files(input_files, destination_path, delete)
     xml_packages, invalid_files = group_files_in_xml_packages(file_info_items)
-    return add_document_info(xml_packages)
+    document_packages = []
+    for prefix, xml_pkg in sorted(xml_packages.items()):
+        document_packages.append(DocumentPackage(xml_pkg))
+    return document_packages
