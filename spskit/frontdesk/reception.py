@@ -9,7 +9,7 @@ from spskit.utils.xml_utils import XML
 from spskit.sps.document_data import DocumentData
 
 
-def get_file_info_items(received_files, destination_path, delete):
+def classify_files(received_files, destination_path, delete):
     input_files = []
     for f in received_files:
         file_path = os.path.join(destination_path, os.path.basename(f))
@@ -23,7 +23,7 @@ def get_file_info_items(received_files, destination_path, delete):
     return input_files
 
 
-def get_xml_packages(file_info_items):
+def group_files_in_xml_packages(file_info_items):
     """
     A partir de uma lista de FileInfo, retorna uma lista de pacotes XML e
     uma lista de arquivos que não fazem parte de nenhum pacote XML
@@ -55,7 +55,7 @@ def get_xml_packages(file_info_items):
     return xml_packages, invalid_files
 
 
-def get_document_packages(xml_packages):
+def add_document_info(xml_packages):
     """
     A partir de xml_packages (um dicionário de pacotes de XML),
     retorna document_packages (o mesmo dicionário acrescido de ativos digitais,
@@ -82,8 +82,8 @@ def get_document_packages(xml_packages):
     return document_packages
 
 
-def receive_files(input_files, destination_path, delete=False):
-    file_info_items = get_file_info_items(
+def get_document_packages(input_files, destination_path, delete=False):
+    file_info_items = classify_files(
         input_files, destination_path, delete)
-    xml_packages, invalid_files = get_xml_packages(file_info_items)
-    document_packages = get_documents_packages(xml_packages)
+    xml_packages, invalid_files = group_files_in_xml_packages(file_info_items)
+    return add_document_info(xml_packages)

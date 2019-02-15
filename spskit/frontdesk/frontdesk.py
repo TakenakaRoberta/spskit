@@ -1,7 +1,6 @@
 # coding: utf-8
 
 import os
-import shutil
 
 from spskit.mkp2xml.mkp2sps import SGMLXML2SPSXML
 from spskit.qa.sps_qa import SPSPackageQA

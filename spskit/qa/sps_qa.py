@@ -3,11 +3,14 @@
 import os
 #  import shutil
 
-#  from spskit.utils.files_utils import unzip_file, delete_file_or_folder
+from spskit.utils.files_utils import (
+    # unzip_file,
+    delete_file_or_folder
+)
 from spskit.qa.document_xml_validator import DocumentXMLValidator
 from spskit.qa.document_data_validator import DocumentDataValidator
 from spskit.qa.pkg_data_validator import PkgDataValidator
-from spskit.frontdesk.reception import receive_files
+from spskit.frontdesk.reception import get_document_packages
 
 
 """
@@ -46,6 +49,7 @@ class PkgReception:
         return package
 """
 
+
 class Outputs:
 
     def __init__(self, path):
@@ -53,7 +57,8 @@ class Outputs:
         self.scielo_package_path = os.path.join(path, 'scielo_package')
         self.work_path = os.path.join(path, 'work')
         self.src_path = os.path.join(path, 'src')
-        self.scielo_package_zips_path = os.path.join(path, 'scielo_package_zips')
+        self.scielo_package_zips_path = os.path.join(
+            path, 'scielo_package_zips')
         self.pmc_package_path = os.path.join(path, 'pmc_package')
         self.reports_path = os.path.join(path, 'errors')
 
@@ -73,7 +78,8 @@ class ReportFiles(object):
         self.reports_path = reports_path
         if not os.path.isdir(reports_path):
             os.makedirs(reports_path)
-        self.ctrl_filename = '{}/{}{}.ctrl.txt'.format(self.wrk_path, self.xml_name)
+        self.ctrl_filename = '{}/{}{}.ctrl.txt'.format(
+            self.wrk_path, self.xml_name)
         self.style_report_filename = '{}{}.rep.html'.format(
             self.reports_path, self.xml_name)
         self.dtd_report_filename = '{}{}.dtd.txt'.format(
@@ -122,25 +128,17 @@ class SPSPackageQA:
 
     def validate_files(self, files, outputs_path, delete):
         outputs = Outputs(outputs_path)
-        package = receive_files(files, outputs.path, delete)
+        document_packages = get_document_packages(files, outputs.path, delete)
         if len(files) > 1:
-            pkg_data_validation_report_content = self._validate_package(package, outputs)
-        package['pkg_data_validations'] = pkg_data_validation_report_content
-        return package, outputs
+            document_packages['pkg_data_validations'] = \
+                self.validate_document_packages(document_packages, outputs)
+        return document_packages, outputs
 
-    """
-    def validate_package(self, pkg_path, outputs_path, delete):
-        outputs = Outputs(outputs_path)
-        package = self.pkg_reception.receive_package(pkg_path, outputs.path, delete)
-        pkg_data_validation_report_content = self._validate_package(package, outputs)
-        package['pkg_data_validations'] = pkg_data_validation_report_content
-        return package, outputs
-    """
-
-    def _validate_package(self, packages, outputs):
+    def validate_document_packages(self, packages, outputs):
         for package in packages:
-            self._validate_article(package, ReportFiles(package['name'], outputs.reports_path))
-        data, pkg_data_validation_report_content = self.pkg_data_validator.validate(package)
+            self._validate_article(
+                package, ReportFiles(package['name'], outputs.reports_path))
+            data, pkg_data_validation_report_content = self.pkg_data_validator.validate(package)
         return pkg_data_validation_report_content
 
     def _validate_article(self, pkg_item, report_files):

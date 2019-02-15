@@ -5,6 +5,7 @@ usa SPSPackageQA para obter um pacote validado
 usa JournalArticlesDataValidator para validar os dados de artigos e journal no contexto de pacote (incluindo os já registrados)
 usa RegistrationManager para validar os dados de artigos e journal considerando as regras de gestão da coleção.
 """
+import os
 import sys
 import argparse
 
@@ -26,7 +27,8 @@ class XMLConverter:
 
 
 def get_valid_argument():
-    if os.path.isdir('config') and len([f for f in os.listdir('config') if f.endswith('.xc.ini')]) > 0:
+    if os.path.isdir('config') and \
+       len([f for f in os.listdir('config') if f.endswith('.xc.ini')]) > 0:
         return 'collection'
     return 'xml_package'
 
